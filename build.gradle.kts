@@ -17,7 +17,8 @@ dependencies {
     implementation("org.antlr:antlr4-runtime:4.7")
 }
 
-val genDir = file("src/gen")
+val genSrcDir = file("src/main/gen")
+val genDir = genSrcDir.resolve("com/zelkatani/antlr")
 
 configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -25,26 +26,26 @@ configure<JavaPluginConvention> {
 }
 
 sourceSets["main"].java {
-    srcDir(genDir)
+    srcDir(genSrcDir)
 }
 
 idea {
     module {
-        generatedSourceDirs.add(genDir)
+        generatedSourceDirs.add(genSrcDir)
     }
 }
 
 tasks.withType<AntlrTask> {
     outputDirectory = genDir
     arguments.addAll(listOf(
+        "-package", "com.zelkatani.antlr",
         "-visitor",
-        "-no-listener",
         "-long-messages",
         "-Werror"))
 }
 
 tasks.named<Jar>("jar") {
-    manifest.attributes["Main-Class"] = "EditorKt"
+    manifest.attributes["Main-Class"] = "com.zelkatani.EditorKt"
     from(configurations.runtimeClasspath.map { if (it.isDirectory) it as Any else zipTree(it) })
     from(sourceSets["main"].output)
     archiveName = "editor.jar"
@@ -52,4 +53,5 @@ tasks.named<Jar>("jar") {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
+    dependsOn(tasks.getByName("generateGrammarSource"))
 }
