@@ -1,7 +1,7 @@
 package com.zelkatani
 
 import com.zelkatani.model.Bitmap
-import com.zelkatani.model.Defaults
+import com.zelkatani.model.Default
 import java.io.File
 import kotlin.math.roundToInt
 
@@ -13,7 +13,7 @@ fun main(args: Array<String>) {
     }
 
     val defaultsFile = File(args[0])
-    val defaults = Defaults.from(defaultsFile)
+    val defaults = Default.from(defaultsFile)
 
     val provinces = Bitmap(File(defaults.provinces))
 

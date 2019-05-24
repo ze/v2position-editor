@@ -1,4 +1,4 @@
-grammar Defaults;
+grammar Default;
 
 /*
  * Handles the default.map file in directory `map`.
@@ -70,7 +70,7 @@ BORDER_CUTOFF: 'border_cutoff';
 FLOAT: INT? '.' DIGIT+;
 
 INT: '-'? DIGIT+;
-fragment DIGIT: ('0' ..'9');
+fragment DIGIT: ('0' .. '9');
 
 ASSIGN: '=';
 L_BRACE: '{';

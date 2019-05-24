@@ -1,16 +1,16 @@
 package com.zelkatani.visitor
 
 import com.zelkatani.MultiException
-import com.zelkatani.antlr.DefaultsBaseVisitor
-import com.zelkatani.antlr.DefaultsParser
-import com.zelkatani.model.Defaults
+import com.zelkatani.antlr.DefaultBaseVisitor
+import com.zelkatani.antlr.DefaultParser
+import com.zelkatani.model.Default
 import com.zelkatani.requireNoExceptions
 import org.antlr.v4.runtime.tree.TerminalNode
 
 /**
  * A visitor for "default.map".
  */
-class DefaultsVisitor : DefaultsBaseVisitor<Any>() {
+class DefaultVisitor : DefaultBaseVisitor<Any>() {
 
     var maxProvinces: Int? = null
     var seaStarts: List<Int>? = null
@@ -31,7 +31,7 @@ class DefaultsVisitor : DefaultsBaseVisitor<Any>() {
     var tree: Int? = null
     var borderCutoff: Float? = null
 
-    override fun visitDefaults(ctx: DefaultsParser.DefaultsContext): Defaults {
+    override fun visitDefaults(ctx: DefaultParser.DefaultsContext): Default {
         val multiException = MultiException()
 
         val defaultData = ctx.defaultData()
@@ -61,7 +61,7 @@ class DefaultsVisitor : DefaultsBaseVisitor<Any>() {
 
         requireNoExceptions(multiException)
 
-        return Defaults(
+        return Default(
             maxProvinces!!,
             seaStarts!!,
             definitions!!,
@@ -83,75 +83,75 @@ class DefaultsVisitor : DefaultsBaseVisitor<Any>() {
         )
     }
 
-    override fun visitMaxProvincesExpr(ctx: DefaultsParser.MaxProvincesExprContext) {
+    override fun visitMaxProvincesExpr(ctx: DefaultParser.MaxProvincesExprContext) {
         maxProvinces = ctx.INT().asInt()
     }
 
-    override fun visitSeaStartsBlock(ctx: DefaultsParser.SeaStartsBlockContext) {
+    override fun visitSeaStartsBlock(ctx: DefaultParser.SeaStartsBlockContext) {
         seaStarts = ctx.INT().map(TerminalNode::asInt)
     }
 
-    override fun visitDefinitionsExpr(ctx: DefaultsParser.DefinitionsExprContext) {
+    override fun visitDefinitionsExpr(ctx: DefaultParser.DefinitionsExprContext) {
         definitions = ctx.STRING().asUnquotedString()
     }
 
-    override fun visitProvincesExpr(ctx: DefaultsParser.ProvincesExprContext) {
+    override fun visitProvincesExpr(ctx: DefaultParser.ProvincesExprContext) {
         provinces = ctx.STRING().asUnquotedString()
     }
 
-    override fun visitPositionsExpr(ctx: DefaultsParser.PositionsExprContext) {
+    override fun visitPositionsExpr(ctx: DefaultParser.PositionsExprContext) {
         positions = ctx.STRING().asUnquotedString()
     }
 
-    override fun visitTerrainExpr(ctx: DefaultsParser.TerrainExprContext) {
+    override fun visitTerrainExpr(ctx: DefaultParser.TerrainExprContext) {
         terrain = ctx.STRING().asUnquotedString()
     }
 
-    override fun visitRiversExpr(ctx: DefaultsParser.RiversExprContext) {
+    override fun visitRiversExpr(ctx: DefaultParser.RiversExprContext) {
         rivers = ctx.STRING().asUnquotedString()
     }
 
-    override fun visitTerrainDefinitionExpr(ctx: DefaultsParser.TerrainDefinitionExprContext) {
+    override fun visitTerrainDefinitionExpr(ctx: DefaultParser.TerrainDefinitionExprContext) {
         terrainDefinition = ctx.STRING().asUnquotedString()
     }
 
-    override fun visitTreeDefinitionExpr(ctx: DefaultsParser.TreeDefinitionExprContext) {
+    override fun visitTreeDefinitionExpr(ctx: DefaultParser.TreeDefinitionExprContext) {
         treeDefinition = ctx.STRING().asUnquotedString()
     }
 
-    override fun visitContinentExpr(ctx: DefaultsParser.ContinentExprContext) {
+    override fun visitContinentExpr(ctx: DefaultParser.ContinentExprContext) {
         continent = ctx.STRING().asUnquotedString()
     }
 
-    override fun visitAdjacenciesExpr(ctx: DefaultsParser.AdjacenciesExprContext) {
+    override fun visitAdjacenciesExpr(ctx: DefaultParser.AdjacenciesExprContext) {
         adjacencies = ctx.STRING().asUnquotedString()
     }
 
-    override fun visitRegionExpr(ctx: DefaultsParser.RegionExprContext) {
+    override fun visitRegionExpr(ctx: DefaultParser.RegionExprContext) {
         region = ctx.STRING().asUnquotedString()
     }
 
-    override fun visitRegionSeaExpr(ctx: DefaultsParser.RegionSeaExprContext) {
+    override fun visitRegionSeaExpr(ctx: DefaultParser.RegionSeaExprContext) {
         regionSea = ctx.STRING().asUnquotedString()
     }
 
-    override fun visitProvinceFlagSpriteExpr(ctx: DefaultsParser.ProvinceFlagSpriteExprContext) {
+    override fun visitProvinceFlagSpriteExpr(ctx: DefaultParser.ProvinceFlagSpriteExprContext) {
         provinceFlagSprites = ctx.STRING().asUnquotedString()
     }
 
-    override fun visitBorderHeightsBlock(ctx: DefaultsParser.BorderHeightsBlockContext) {
+    override fun visitBorderHeightsBlock(ctx: DefaultParser.BorderHeightsBlockContext) {
         borderHeights = ctx.INT(0).asInt() to ctx.INT(1).asInt()
     }
 
-    override fun visitTerrainSheetHeighstBlock(ctx: DefaultsParser.TerrainSheetHeighstBlockContext) {
+    override fun visitTerrainSheetHeighstBlock(ctx: DefaultParser.TerrainSheetHeighstBlockContext) {
         terrainSheetHeights = ctx.INT().asInt()
     }
 
-    override fun visitTreeExpr(ctx: DefaultsParser.TreeExprContext) {
+    override fun visitTreeExpr(ctx: DefaultParser.TreeExprContext) {
         tree = ctx.INT().asInt()
     }
 
-    override fun visitBorderCutoffExpr(ctx: DefaultsParser.BorderCutoffExprContext) {
+    override fun visitBorderCutoffExpr(ctx: DefaultParser.BorderCutoffExprContext) {
         borderCutoff = (if (ctx.FLOAT() != null) {
             ctx.FLOAT()
         } else {

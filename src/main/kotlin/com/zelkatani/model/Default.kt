@@ -1,8 +1,8 @@
 package com.zelkatani.model
 
-import com.zelkatani.antlr.DefaultsLexer
-import com.zelkatani.antlr.DefaultsParser
-import com.zelkatani.visitor.DefaultsVisitor
+import com.zelkatani.antlr.DefaultLexer
+import com.zelkatani.antlr.DefaultParser
+import com.zelkatani.visitor.DefaultVisitor
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import java.io.File
@@ -10,7 +10,7 @@ import java.io.File
 /**
  * The "default.map" file model.
  */
-data class Defaults(
+data class Default(
     val maxProvinces: Int,
     val seaStarts: List<Int>,
     val definitions: String,
@@ -30,13 +30,13 @@ data class Defaults(
     val tree: Int,
     val borderCutoff: Float
 ) {
-    companion object : ModelBuilder<Defaults> {
-        override fun from(file: File): Defaults {
-            val defaultLexer = DefaultsLexer(CharStreams.fromReader(file.reader()))
-            val defaultParser = DefaultsParser(CommonTokenStream(defaultLexer))
+    companion object : ModelBuilder<Default> {
+        override fun from(file: File): Default {
+            val defaultLexer = DefaultLexer(CharStreams.fromReader(file.reader()))
+            val defaultParser = DefaultParser(CommonTokenStream(defaultLexer))
 
             val defaultsContext = defaultParser.defaults()
-            val defaultVisitor = DefaultsVisitor()
+            val defaultVisitor = DefaultVisitor()
 
             return defaultVisitor.visitDefaults(defaultsContext)
         }

@@ -15,6 +15,8 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     antlr("org.antlr:antlr4:4.7")
     implementation("org.antlr:antlr4-runtime:4.7")
+
+    compile("org.apache.commons:commons-csv:1.5")
 }
 
 val genSrcDir = file("src/main/gen")
