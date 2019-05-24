@@ -36,6 +36,9 @@ fun requireNoExceptions(multiException: MultiException) {
     }
 }
 
+/**
+ * An exception associated with a line number.
+ */
 class LineException(message: String, private val line: Int) : Exception(message) {
     override fun toString() = "Error at line $line: $message"
 }

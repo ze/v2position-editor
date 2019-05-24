@@ -7,6 +7,9 @@ import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import java.io.File
 
+/**
+ * The "default.map" file model.
+ */
 data class Defaults(
     val maxProvinces: Int,
     val seaStarts: List<Int>,
@@ -27,7 +30,7 @@ data class Defaults(
     val tree: Int,
     val borderCutoff: Float
 ) {
-    companion object : EmulationBuilder<Defaults> {
+    companion object : ModelBuilder<Defaults> {
         override fun from(file: File): Defaults {
             val defaultLexer = DefaultsLexer(CharStreams.fromReader(file.reader()))
             val defaultParser = DefaultsParser(CommonTokenStream(defaultLexer))

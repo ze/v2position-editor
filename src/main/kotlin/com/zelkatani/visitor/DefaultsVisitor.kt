@@ -7,6 +7,9 @@ import com.zelkatani.model.Defaults
 import com.zelkatani.requireNoExceptions
 import org.antlr.v4.runtime.tree.TerminalNode
 
+/**
+ * A visitor for "default.map".
+ */
 class DefaultsVisitor : DefaultsBaseVisitor<Any>() {
 
     var maxProvinces: Int? = null
