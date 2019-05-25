@@ -3,8 +3,8 @@ package com.zelkatani.visitor
 import com.zelkatani.MultiException
 import com.zelkatani.antlr.RegionBaseVisitor
 import com.zelkatani.antlr.RegionParser
+import com.zelkatani.model.ProvinceList
 import com.zelkatani.model.Region
-import com.zelkatani.model.Regions
 import com.zelkatani.requireNoExceptions
 import org.antlr.v4.runtime.tree.TerminalNode
 
@@ -12,18 +12,18 @@ import org.antlr.v4.runtime.tree.TerminalNode
  * Visitor for region.txt parser.
  */
 class RegionVisitor : RegionBaseVisitor<Any>() {
-    private val regions = hashMapOf<String, Region>()
+    private val regions = hashMapOf<String, ProvinceList>()
     private val provincesAndOwner = hashMapOf<Int, String>()
 
     private val multiException = MultiException()
 
-    override fun visitRegion(ctx: RegionParser.RegionContext): Regions {
+    override fun visitRegion(ctx: RegionParser.RegionContext): Region {
         val regionData = ctx.regionData()
         regionData.forEach(::visitRegionData)
 
         requireNoExceptions(multiException)
 
-        return Regions(regions)
+        return Region(regions)
     }
 
     override fun visitRegionData(ctx: RegionParser.RegionDataContext) {

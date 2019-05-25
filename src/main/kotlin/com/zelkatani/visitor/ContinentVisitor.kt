@@ -5,8 +5,8 @@ import com.zelkatani.antlr.ContinentBaseVisitor
 import com.zelkatani.antlr.ContinentParser
 import com.zelkatani.antlr.ContinentParser.FLOAT
 import com.zelkatani.antlr.ContinentParser.INT
+import com.zelkatani.model.Continent
 import com.zelkatani.model.ContinentInfo
-import com.zelkatani.model.Continents
 import com.zelkatani.model.Modifier
 import com.zelkatani.requireNoExceptions
 import org.antlr.v4.runtime.ParserRuleContext
@@ -18,7 +18,7 @@ import org.antlr.v4.runtime.tree.TerminalNode
 class ContinentVisitor : ContinentBaseVisitor<Any>() {
     private val multiException = MultiException()
 
-    override fun visitContinents(ctx: ContinentParser.ContinentsContext): Continents {
+    override fun visitContinents(ctx: ContinentParser.ContinentsContext): Continent {
         val definitions = hashMapOf<String, ContinentInfo>()
 
         val continentData = ctx.continentData()
@@ -35,7 +35,7 @@ class ContinentVisitor : ContinentBaseVisitor<Any>() {
 
         requireNoExceptions(multiException)
 
-        return Continents(definitions)
+        return Continent(definitions)
     }
 
     override fun visitContinentData(ctx: ContinentParser.ContinentDataContext): Pair<String, ContinentInfo> {
@@ -43,8 +43,8 @@ class ContinentVisitor : ContinentBaseVisitor<Any>() {
         val cec = ctx.continentExpr() // TODO test if duplicates break or override.
 
         val line = ctx.line
-        if (pbc.size > 1) multiException += "Too many province definitions" to line
-        if (pbc.size == 0) multiException += "No province definitions" to line
+        if (pbc.size > 1) multiException += "Too many province definition" to line
+        if (pbc.size == 0) multiException += "No province definition" to line
 
         val provinces = visitProvincesBlock(pbc[0])
         val effects = cec.map(::visitContinentExpr)

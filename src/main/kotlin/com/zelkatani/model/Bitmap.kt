@@ -15,6 +15,17 @@ typealias Point = Pair<Int, Int>
  * A Bitmap model for .bmp images
  */
 class Bitmap(bitmapFile: File) : Iterable<Point> {
+
+    /**
+     * Create a Bitmap from a file. While useless,
+     * it fits the style of other [ModelBuilder] implementations
+     */
+    companion object : ModelBuilder<Bitmap> {
+        override fun from(file: File): Bitmap {
+            return Bitmap(file)
+        }
+    }
+
     val bitmap: BufferedImage = ImageIO.read(bitmapFile)
     private val bitmapData = (bitmap.raster.dataBuffer as DataBufferByte).data
 

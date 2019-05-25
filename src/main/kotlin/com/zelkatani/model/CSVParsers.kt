@@ -127,7 +127,7 @@ class DefinitionParser(file: File) : MapCSVParser(file) {
     private val _provinces = HashMap<Int, ProvinceDefinitionRecord>(mapCapacity)
 
     /**
-     * All province definitions.
+     * All province definition.
      */
     val provinces: Map<Int, ProvinceDefinitionRecord>
         get() = _provinces
@@ -135,7 +135,7 @@ class DefinitionParser(file: File) : MapCSVParser(file) {
     private val _colors = HashMap<Color, ColorDefinitionRecord>(mapCapacity)
 
     /**
-     * All color definitions.
+     * All color definition.
      */
     val colors: Map<Color, ColorDefinitionRecord>
         get() = _colors
@@ -164,22 +164,24 @@ class DefinitionParser(file: File) : MapCSVParser(file) {
             "Entry 'through' must be a positive integer."
         }
 
-        val color = Color(record[1].toInt() / 255.0,
+        val color = Color(
+            record[1].toInt() / 255.0,
             record[2].toInt() / 255.0,
             record[3].toInt() / 255.0,
-            1.0)
+            1.0
+        )
         val descriptor = record[4]
 
         return Triple(province, color, descriptor)
     }
 
     /**
-     * The definitions that are known by any province.
+     * The definition that are known by any province.
      */
     data class ProvinceDefinitionRecord(val color: Color, val descriptor: String)
 
     /**
-     * The definitions that are known by any province.
+     * The definition that are known by any province.
      */
     data class ColorDefinitionRecord(val province: Int, val descriptor: String)
 }

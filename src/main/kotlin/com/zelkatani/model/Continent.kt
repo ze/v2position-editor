@@ -11,16 +11,16 @@ import java.io.File
  * Continents model that contains the information of all defined continents.
  * (This may be better as an object)
  */
-data class Continents(val definitions: Map<String, ContinentInfo>) {
-    companion object : ModelBuilder<Continents> {
-        override fun from(file: File): Continents {
+data class Continent(val definitions: Map<String, ContinentInfo>) {
+    companion object : ModelBuilder<Continent> {
+        override fun from(file: File): Continent {
             val continentLexer = ContinentLexer(CharStreams.fromReader(file.reader()))
             val continentParser = ContinentParser(CommonTokenStream(continentLexer))
 
-            val continentsContext = continentParser.continents()
-            val continentsVisitor = ContinentVisitor()
+            val continentContext = continentParser.continents()
+            val continentVisitor = ContinentVisitor()
 
-            return continentsVisitor.visitContinents(continentsContext)
+            return continentVisitor.visitContinents(continentContext)
         }
     }
 

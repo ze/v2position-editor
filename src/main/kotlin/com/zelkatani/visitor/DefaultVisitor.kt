@@ -42,7 +42,7 @@ class DefaultVisitor : DefaultBaseVisitor<Any>() {
         val line = ctx.line
         maxProvinces ?: multiException.add("max_provinces is not defined.", line)
         seaStarts ?: multiException.add("sea_starts is not defined.", line)
-        definitions ?: multiException.add("definitions path is not defined.", line)
+        definitions ?: multiException.add("definition path is not defined.", line)
         provinces ?: multiException.add("provinces.bmp path is not defined.", line)
         positions ?: multiException.add("positions path is not defined.", line)
         terrain ?: multiException.add("terrain.bmp path is not defined.", line)

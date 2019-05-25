@@ -34,13 +34,13 @@ class PositionsVisitor : PositionsBaseVisitor<Any>() {
     }
 
     override fun visitPositionExpr(ctx: PositionsParser.PositionExprContext) =
-            visit(ctx.getChild(0)) as PositionInfo
+        visit(ctx.getChild(0)) as PositionInfo
 
     override fun visitUnitPositionBlock(ctx: PositionsParser.UnitPositionBlockContext) =
-            ObjectCoordinate(ObjectType.UNIT, visitCoordinate(ctx.coordinate()))
+        ObjectCoordinate(ObjectType.UNIT, visitCoordinate(ctx.coordinate()))
 
     override fun visitTextPositionBlock(ctx: PositionsParser.TextPositionBlockContext) =
-            ObjectCoordinate(ObjectType.TEXT, visitCoordinate(ctx.coordinate()))
+        ObjectCoordinate(ObjectType.TEXT, visitCoordinate(ctx.coordinate()))
 
     override fun visitBuildingPositionBlock(ctx: PositionsParser.BuildingPositionBlockContext) =
         BuildingPosition(ctx.objectPositionBlock().map(::visitObjectPositionBlock))

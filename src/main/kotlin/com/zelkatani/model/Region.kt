@@ -10,9 +10,9 @@ import java.io.File
 /**
  * Regions model that holds all region [definitions] for region.txt.
  */
-data class Regions(val definitions: Map<String, Region>) {
-    companion object : ModelBuilder<Regions> {
-        override fun from(file: File): Regions {
+data class Region(val definitions: Map<String, ProvinceList>) {
+    companion object : ModelBuilder<Region> {
+        override fun from(file: File): Region {
             val regionLexer = RegionLexer(CharStreams.fromReader(file.reader()))
             val regionParser = RegionParser(CommonTokenStream(regionLexer))
 
@@ -24,4 +24,4 @@ data class Regions(val definitions: Map<String, Region>) {
     }
 }
 
-typealias Region = List<Int>
+typealias ProvinceList = List<Int>

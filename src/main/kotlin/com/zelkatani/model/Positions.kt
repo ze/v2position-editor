@@ -24,6 +24,7 @@ data class Positions(val positions: Map<Int, PositionData>) {
 }
 
 typealias PositionData = List<PositionInfo>
+
 sealed class PositionInfo
 
 class ObjectCoordinate(val type: ObjectType, val coordinate: Coordinate) : PositionInfo() {
@@ -33,6 +34,7 @@ class ObjectCoordinate(val type: ObjectType, val coordinate: Coordinate) : Posit
 }
 
 typealias BuildingTransform = Pair<BuildingType, Number>
+
 class BuildingNudgeBlock(val transforms: List<BuildingTransform>) : PositionInfo()
 class BuildingRotation(val transforms: List<BuildingTransform>) : PositionInfo()
 
