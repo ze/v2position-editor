@@ -105,49 +105,49 @@ class TerrainVisitor : TerrainBaseVisitor<Any>() {
     }
 
     override fun visitMovementCostExpr(ctx: TerrainParser.MovementCostExprContext): Modifier =
-            Modifier(ctx.MOVEMENT_COST(), ctx.getNumber())
+        Modifier(ctx.MOVEMENT_COST(), ctx.getNumber())
 
     override fun visitAssimilationRateExpr(ctx: TerrainParser.AssimilationRateExprContext): Modifier =
-            Modifier(ctx.ASSIMILATION_RATE(), ctx.getNumber())
+        Modifier(ctx.ASSIMILATION_RATE(), ctx.getNumber())
 
     override fun visitAttritionExpr(ctx: TerrainParser.AttritionExprContext): Modifier =
-            Modifier(ctx.ATTRITION(), ctx.getNumber())
+        Modifier(ctx.ATTRITION(), ctx.getNumber())
 
     override fun visitCombatWidthExpr(ctx: TerrainParser.CombatWidthExprContext): Modifier =
-            Modifier(ctx.COMBAT_WIDTH(), ctx.getNumber())
+        Modifier(ctx.COMBAT_WIDTH(), ctx.getNumber())
 
     override fun visitDefenceExpr(ctx: TerrainParser.DefenceExprContext): Modifier =
-            Modifier(ctx.DEFENCE(), ctx.getNumber())
+        Modifier(ctx.DEFENCE(), ctx.getNumber())
 
     override fun visitFarmRGOEffExpr(ctx: TerrainParser.FarmRGOEffExprContext): Modifier =
-            Modifier(ctx.FARM_RGO_EFF(), ctx.getNumber())
+        Modifier(ctx.FARM_RGO_EFF(), ctx.getNumber())
 
     override fun visitFarmRGOSizeExpr(ctx: TerrainParser.FarmRGOSizeExprContext): Modifier =
-            Modifier(ctx.FARM_RGO_SIZE(), ctx.getNumber())
+        Modifier(ctx.FARM_RGO_SIZE(), ctx.getNumber())
 
     override fun visitImmigrantAttractExpr(ctx: TerrainParser.ImmigrantAttractExprContext): Modifier =
-            Modifier(ctx.IMMIGRANT_ATTRACT(), ctx.getNumber())
+        Modifier(ctx.IMMIGRANT_ATTRACT(), ctx.getNumber())
 
     override fun visitIsWaterExpr(ctx: TerrainParser.IsWaterExprContext): Modifier =
-            Modifier(ctx.IS_WATER(), visitAffirmative(ctx.affirmative()))
+        Modifier(ctx.IS_WATER(), visitAffirmative(ctx.affirmative()))
 
     override fun visitMinBuildFortExpr(ctx: TerrainParser.MinBuildFortExprContext): Modifier =
-            Modifier(ctx.MIN_BUILD_FORT(), ctx.INT().asInt())
+        Modifier(ctx.MIN_BUILD_FORT(), ctx.INT().asInt())
 
     override fun visitMinBuildNavalBaseExpr(ctx: TerrainParser.MinBuildNavalBaseExprContext): Modifier =
-            Modifier(ctx.MIN_BUILD_NAVAL_BASE(), ctx.INT().asInt())
+        Modifier(ctx.MIN_BUILD_NAVAL_BASE(), ctx.INT().asInt())
 
     override fun visitMinBuildRailroadExpr(ctx: TerrainParser.MinBuildRailroadExprContext): Modifier =
-            Modifier(ctx.MIN_BUILD_RAILROAD(), ctx.INT().asInt())
+        Modifier(ctx.MIN_BUILD_RAILROAD(), ctx.INT().asInt())
 
     override fun visitMineRGOEffExpr(ctx: TerrainParser.MineRGOEffExprContext): Modifier =
-            Modifier(ctx.MINE_RGO_EFF(), ctx.getNumber())
+        Modifier(ctx.MINE_RGO_EFF(), ctx.getNumber())
 
     override fun visitMineRGOSizeExpr(ctx: TerrainParser.MineRGOSizeExprContext): Modifier =
-            Modifier(ctx.MINE_RGO_SIZE(), ctx.getNumber())
+        Modifier(ctx.MINE_RGO_SIZE(), ctx.getNumber())
 
     override fun visitSupplyLimitExpr(ctx: TerrainParser.SupplyLimitExprContext): Modifier =
-            Modifier(ctx.SUPPLY_LIMIT(), ctx.INT().asInt())
+        Modifier(ctx.SUPPLY_LIMIT(), ctx.INT().asInt())
 
     override fun visitColorBlock(ctx: TerrainParser.ColorBlockContext): List<Int> = ctx.INT().map(TerminalNode::asInt)
 

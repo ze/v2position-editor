@@ -95,8 +95,8 @@ FLOAT: INT? '.' DIGIT+;
 INT: '-'? DIGIT+;
 fragment DIGIT: ('0' .. '9');
 
-IDENTIFIER: LETTERS (LETTERS | '0' .. '9')*;
-fragment LETTERS: ('a' .. 'z' | 'A' .. 'Z' | '_');
+IDENTIFIER: LETTER (LETTER | '0' .. '9')*;
+fragment LETTER: ('a' .. 'z' | 'A' .. 'Z' | '_');
 
 ASSIGN: '=';
 L_BRACE: '{';

@@ -8,9 +8,11 @@ import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import java.io.File
 
-data class Terrain(val number: Int,
-                   val definitions: Map<String, TerrainInfo>,
-                   val terrainTGAMapping: Map<String, TerrainType>) {
+data class Terrain(
+    val number: Int,
+    val definitions: Map<String, TerrainInfo>,
+    val terrainTGAMapping: Map<String, TerrainType>
+) {
     companion object : ModelBuilder<Terrain> {
         override fun from(file: File): Terrain {
             val terrainLexer = TerrainLexer(CharStreams.fromReader(file.reader()))
@@ -21,7 +23,6 @@ data class Terrain(val number: Int,
 
             return terrainVisitor.visitTerrain(terrainContext)
         }
-
     }
 }
 

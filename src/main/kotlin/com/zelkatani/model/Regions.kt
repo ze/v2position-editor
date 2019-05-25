@@ -21,7 +21,6 @@ data class Regions(val definitions: Map<String, Region>) {
 
             return regionVisitor.visitRegion(regionContext)
         }
-
     }
 }
 

@@ -2,10 +2,10 @@ package com.zelkatani.model
 
 import com.zelkatani.MultiException
 import com.zelkatani.requireNoExceptions
+import javafx.scene.paint.Color
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.apache.commons.csv.CSVRecord
-import java.awt.Color
 import java.io.File
 import kotlin.collections.set
 
@@ -85,7 +85,7 @@ class AdjacenciesParser(file: File) : MapCSVParser(file) {
                 "impassable" -> AdjacencyType.IMPASSABLE
                 "canal" -> AdjacencyType.CANAL
                 else -> {
-                    multiException.add("Unknown adjacency type: ${it[2]}", it.recordNumber.toInt())
+                    multiException.add("Unknown adjacency positionType: ${it[2]}", it.recordNumber.toInt())
                     AdjacencyType.ERROR
                 }
             }
@@ -122,7 +122,7 @@ class DefinitionParser(file: File) : MapCSVParser(file) {
      * A comfortable base capacity for the game. The base game itself has ~3320 values, so this should allow
      * for no resizing and the addition of a few provinces if necessary.
      */
-    private val mapCapacity = 4500
+    private val mapCapacity = 5000
 
     private val _provinces = HashMap<Int, ProvinceDefinitionRecord>(mapCapacity)
 
@@ -164,7 +164,10 @@ class DefinitionParser(file: File) : MapCSVParser(file) {
             "Entry 'through' must be a positive integer."
         }
 
-        val color = Color(record[1].toInt(), record[2].toInt(), record[3].toInt())
+        val color = Color(record[1].toInt() / 255.0,
+            record[2].toInt() / 255.0,
+            record[3].toInt() / 255.0,
+            1.0)
         val descriptor = record[4]
 
         return Triple(province, color, descriptor)
