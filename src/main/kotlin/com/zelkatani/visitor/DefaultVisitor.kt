@@ -26,7 +26,7 @@ class DefaultVisitor : DefaultBaseVisitor<Any>() {
     var region: String? = null
     var regionSea: String? = null
     var provinceFlagSprites: String? = null
-    var borderHeights: Pair<Int, Int>? = null
+    var borderHeights: List<Int>? = null
     var terrainSheetHeights: Int? = null
     var tree: Int? = null
     var borderCutoff: Float? = null
@@ -140,7 +140,7 @@ class DefaultVisitor : DefaultBaseVisitor<Any>() {
     }
 
     override fun visitBorderHeightsBlock(ctx: DefaultParser.BorderHeightsBlockContext) {
-        borderHeights = ctx.INT(0).asInt() to ctx.INT(1).asInt()
+        borderHeights = ctx.INT().map(TerminalNode::asInt)
     }
 
     override fun visitTerrainSheetHeighstBlock(ctx: DefaultParser.TerrainSheetHeighstBlockContext) {

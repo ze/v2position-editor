@@ -25,7 +25,7 @@ data class Default(
     val region: String,
     val regionSea: String,
     val provinceFlagSprites: String,
-    val borderHeights: Pair<Int, Int>,
+    val borderHeights: List<Int>,
     val terrainSheetHeights: Int,
     val tree: Int,
     val borderCutoff: Float

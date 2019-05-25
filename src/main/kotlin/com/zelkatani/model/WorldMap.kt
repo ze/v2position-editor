@@ -8,7 +8,7 @@ import java.io.File
  */
 data class WorldMap(
     val default: Default,
-    val definition: Definition, // TODO: the path for this file is all messed up...
+    val definition: Definition,
     val provincesBMP: Bitmap,
     val terrainBMP: Bitmap,
     val riversBMP: Bitmap,
@@ -20,7 +20,14 @@ data class WorldMap(
     companion object : ModelBuilder<WorldMap> {
         override fun from(file: File): WorldMap {
             val default = Default.from(file.resolve("default.map"))
-            val definition = Definition.from(file.resolve(default.definitions))
+
+            // A dumb hack to resolve Paradox's lazy hack...
+            // v2/mod/Napoleon's Legacy/map -> v2/map
+            val gameMapFolder = file.resolve("../../../map")
+            val definitionFile = gameMapFolder.resolve(default.definitions)
+            // this just brings us back to the
+
+            val definition = Definition.from(definitionFile)
             val provincesBMP = Bitmap.from(file.resolve(default.provinces))
             val terrainBMP = Bitmap.from(file.resolve(default.terrain))
             val riversBMP = Bitmap.from(file.resolve(default.rivers))

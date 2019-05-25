@@ -165,9 +165,9 @@ class DefinitionParser(file: File) : MapCSVParser(file) {
         }
 
         val color = Color(
-            record[1].toInt() / 255.0,
-            record[2].toInt() / 255.0,
-            record[3].toInt() / 255.0,
+            record[1].replace(".", "").toInt() / 255.0,
+            record[2].replace(".", "").toInt() / 255.0,
+            record[3].replace(".", "").toInt() / 255.0,
             1.0
         )
         val descriptor = record[4]
