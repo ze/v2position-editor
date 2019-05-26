@@ -17,6 +17,7 @@ dependencies {
     implementation("org.antlr:antlr4-runtime:4.7")
 
     compile("org.apache.commons:commons-csv:1.5")
+    compile("no.tornado:tornadofx:1.7.17")
 }
 
 val genSrcDir = file("src/main/gen")
@@ -47,7 +48,7 @@ tasks.withType<AntlrTask> {
 }
 
 tasks.named<Jar>("jar") {
-    manifest.attributes["Main-Class"] = "com.zelkatani.EditorKt"
+    manifest.attributes["Main-Class"] = "com.zelkatani.gui.Editor"
     from(configurations.runtimeClasspath.map { if (it.isDirectory) it as Any else zipTree(it) })
     from(sourceSets["main"].output)
     archiveName = "editor.jar"

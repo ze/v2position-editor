@@ -1,11 +1,13 @@
-package com.zelkatani.visitor
+package com.zelkatani.visitor.map
 
 import com.zelkatani.MultiException
 import com.zelkatani.antlr.RegionBaseVisitor
 import com.zelkatani.antlr.RegionParser
-import com.zelkatani.model.ProvinceList
-import com.zelkatani.model.Region
+import com.zelkatani.model.map.ProvinceList
+import com.zelkatani.model.map.Region
 import com.zelkatani.requireNoExceptions
+import com.zelkatani.visitor.asInt
+import com.zelkatani.visitor.line
 import org.antlr.v4.runtime.tree.TerminalNode
 
 /**

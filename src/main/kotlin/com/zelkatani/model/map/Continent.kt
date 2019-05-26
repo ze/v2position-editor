@@ -1,8 +1,10 @@
-package com.zelkatani.model
+package com.zelkatani.model.map
 
 import com.zelkatani.antlr.ContinentLexer
 import com.zelkatani.antlr.ContinentParser
-import com.zelkatani.visitor.ContinentVisitor
+import com.zelkatani.model.ModelBuilder
+import com.zelkatani.model.Modifiers
+import com.zelkatani.visitor.map.ContinentVisitor
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import java.io.File

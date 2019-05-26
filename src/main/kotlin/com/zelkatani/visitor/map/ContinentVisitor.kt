@@ -1,14 +1,17 @@
-package com.zelkatani.visitor
+package com.zelkatani.visitor.map
 
 import com.zelkatani.MultiException
 import com.zelkatani.antlr.ContinentBaseVisitor
 import com.zelkatani.antlr.ContinentParser
 import com.zelkatani.antlr.ContinentParser.FLOAT
 import com.zelkatani.antlr.ContinentParser.INT
-import com.zelkatani.model.Continent
-import com.zelkatani.model.ContinentInfo
 import com.zelkatani.model.Modifier
+import com.zelkatani.model.map.Continent
+import com.zelkatani.model.map.ContinentInfo
 import com.zelkatani.requireNoExceptions
+import com.zelkatani.visitor.asInt
+import com.zelkatani.visitor.getNumber
+import com.zelkatani.visitor.line
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.TerminalNode
 

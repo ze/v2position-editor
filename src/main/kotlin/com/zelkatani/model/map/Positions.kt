@@ -1,8 +1,9 @@
-package com.zelkatani.model
+package com.zelkatani.model.map
 
 import com.zelkatani.antlr.PositionsLexer
 import com.zelkatani.antlr.PositionsParser
-import com.zelkatani.visitor.PositionsVisitor
+import com.zelkatani.model.ModelBuilder
+import com.zelkatani.visitor.map.PositionsVisitor
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import java.io.File

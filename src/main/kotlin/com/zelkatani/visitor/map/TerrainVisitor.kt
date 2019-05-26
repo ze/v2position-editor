@@ -1,4 +1,4 @@
-package com.zelkatani.visitor
+package com.zelkatani.visitor.map
 
 import com.zelkatani.MultiException
 import com.zelkatani.antlr.TerrainBaseVisitor
@@ -6,10 +6,13 @@ import com.zelkatani.antlr.TerrainParser
 import com.zelkatani.antlr.TerrainParser.FLOAT
 import com.zelkatani.antlr.TerrainParser.INT
 import com.zelkatani.model.Modifier
-import com.zelkatani.model.Terrain
-import com.zelkatani.model.TerrainInfo
-import com.zelkatani.model.TerrainType
+import com.zelkatani.model.map.Terrain
+import com.zelkatani.model.map.TerrainInfo
+import com.zelkatani.model.map.TerrainType
 import com.zelkatani.requireNoExceptions
+import com.zelkatani.visitor.asInt
+import com.zelkatani.visitor.getNumber
+import com.zelkatani.visitor.line
 import javafx.scene.paint.Color
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.TerminalNode

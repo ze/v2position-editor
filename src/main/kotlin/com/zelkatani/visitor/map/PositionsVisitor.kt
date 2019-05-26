@@ -1,13 +1,16 @@
-package com.zelkatani.visitor
+package com.zelkatani.visitor.map
 
 import com.zelkatani.MultiException
 import com.zelkatani.antlr.PositionsBaseVisitor
 import com.zelkatani.antlr.PositionsParser
 import com.zelkatani.antlr.PositionsParser.FLOAT
 import com.zelkatani.antlr.PositionsParser.INT
-import com.zelkatani.model.*
-import com.zelkatani.model.ObjectCoordinate.ObjectType
+import com.zelkatani.model.map.*
+import com.zelkatani.model.map.ObjectCoordinate.ObjectType
 import com.zelkatani.requireNoExceptions
+import com.zelkatani.visitor.asInt
+import com.zelkatani.visitor.getNumber
+import com.zelkatani.visitor.line
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.TerminalNode
 
@@ -49,13 +52,22 @@ class PositionsVisitor : PositionsBaseVisitor<Any>() {
         visit(ctx.getChild(0)) as BuildingPositionData
 
     override fun visitFortPositionBlock(ctx: PositionsParser.FortPositionBlockContext) =
-        BuildingPositionData(BuildingPositionData.PositionType.FORT, visitCoordinate(ctx.coordinate()))
+        BuildingPositionData(
+            BuildingPositionData.PositionType.FORT,
+            visitCoordinate(ctx.coordinate())
+        )
 
     override fun visitNavalBasePositionBlock(ctx: PositionsParser.NavalBasePositionBlockContext) =
-        BuildingPositionData(BuildingPositionData.PositionType.NAVAL_BASE, visitCoordinate(ctx.coordinate()))
+        BuildingPositionData(
+            BuildingPositionData.PositionType.NAVAL_BASE,
+            visitCoordinate(ctx.coordinate())
+        )
 
     override fun visitRailroadPositionBlock(ctx: PositionsParser.RailroadPositionBlockContext) =
-        BuildingPositionData(BuildingPositionData.PositionType.RAILROAD, visitCoordinate(ctx.coordinate()))
+        BuildingPositionData(
+            BuildingPositionData.PositionType.RAILROAD,
+            visitCoordinate(ctx.coordinate())
+        )
 
     override fun visitBuildingConstructionBlock(ctx: PositionsParser.BuildingConstructionBlockContext) =
         ObjectCoordinate(ObjectType.BUILDING_CONSTRUCTION, visitCoordinate(ctx.coordinate()))
@@ -96,7 +108,10 @@ class PositionsVisitor : PositionsBaseVisitor<Any>() {
         BuildingTransform(BuildingType.RAILROAD, ctx.getNumber())
 
     override fun visitAeroplaneFactoryValueExpr(ctx: PositionsParser.AeroplaneFactoryValueExprContext) =
-        BuildingTransform(BuildingType.AEROPLANE_FACTORY, ctx.getNumber())
+        BuildingTransform(
+            BuildingType.AEROPLANE_FACTORY,
+            ctx.getNumber()
+        )
 
     override fun visitTextRotationExpr(ctx: PositionsParser.TextRotationExprContext) =
         TextRotation(ctx.getNumber())

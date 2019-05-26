@@ -1,5 +1,6 @@
-package com.zelkatani.model
+package com.zelkatani.model.map
 
+import com.zelkatani.model.ModelBuilder
 import java.io.File
 
 /**

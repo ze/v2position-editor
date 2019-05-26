@@ -1,8 +1,9 @@
-package com.zelkatani.model
+package com.zelkatani.model.map
 
 import com.zelkatani.antlr.RegionLexer
 import com.zelkatani.antlr.RegionParser
-import com.zelkatani.visitor.RegionVisitor
+import com.zelkatani.model.ModelBuilder
+import com.zelkatani.visitor.map.RegionVisitor
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import java.io.File

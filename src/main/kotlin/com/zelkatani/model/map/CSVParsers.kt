@@ -1,4 +1,4 @@
-package com.zelkatani.model
+package com.zelkatani.model.map
 
 import com.zelkatani.MultiException
 import com.zelkatani.requireNoExceptions
@@ -90,7 +90,8 @@ class AdjacenciesParser(file: File) : MapCSVParser(file) {
                 }
             }
 
-            _adjacencies[point] = AdjacencyRecord(type, it[3].toInt(), it[4].toInt(), it[5])
+            _adjacencies[point] =
+                AdjacencyRecord(type, it[3].toInt(), it[4].toInt(), it[5])
         }
 
         close()
@@ -150,8 +151,10 @@ class DefinitionParser(file: File) : MapCSVParser(file) {
         parser.forEachProvinceIndex {
             val triple = parseCSVRecord(it)
 
-            _provinces[triple.first] = ProvinceDefinitionRecord(triple.second, triple.third)
-            _colors[triple.second] = ColorDefinitionRecord(triple.first, triple.third)
+            _provinces[triple.first] =
+                ProvinceDefinitionRecord(triple.second, triple.third)
+            _colors[triple.second] =
+                ColorDefinitionRecord(triple.first, triple.third)
         }
     }
 

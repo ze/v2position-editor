@@ -1,14 +1,17 @@
-package com.zelkatani.visitor
+package com.zelkatani.visitor.map
 
 import com.zelkatani.MultiException
 import com.zelkatani.antlr.ClimateBaseVisitor
 import com.zelkatani.antlr.ClimateParser
 import com.zelkatani.antlr.ClimateParser.FLOAT
 import com.zelkatani.antlr.ClimateParser.INT
-import com.zelkatani.model.Climate
 import com.zelkatani.model.Modifier
 import com.zelkatani.model.Modifiers
+import com.zelkatani.model.map.Climate
 import com.zelkatani.requireNoExceptions
+import com.zelkatani.visitor.asInt
+import com.zelkatani.visitor.getNumber
+import com.zelkatani.visitor.line
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.TerminalNode
 

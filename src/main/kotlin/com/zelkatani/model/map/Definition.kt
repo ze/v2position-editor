@@ -1,5 +1,6 @@
-package com.zelkatani.model
+package com.zelkatani.model.map
 
+import com.zelkatani.model.ModelBuilder
 import javafx.scene.paint.Color
 import java.io.File
 

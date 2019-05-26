@@ -1,10 +1,14 @@
-package com.zelkatani.visitor
+package com.zelkatani.visitor.map
 
 import com.zelkatani.MultiException
 import com.zelkatani.antlr.DefaultBaseVisitor
 import com.zelkatani.antlr.DefaultParser
-import com.zelkatani.model.Default
+import com.zelkatani.model.map.Default
 import com.zelkatani.requireNoExceptions
+import com.zelkatani.visitor.asFloat
+import com.zelkatani.visitor.asInt
+import com.zelkatani.visitor.asUnquotedString
+import com.zelkatani.visitor.line
 import org.antlr.v4.runtime.tree.TerminalNode
 
 /**
