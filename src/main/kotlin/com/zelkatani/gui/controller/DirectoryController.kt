@@ -2,8 +2,12 @@ package com.zelkatani.gui.controller
 
 import com.zelkatani.gui.preferencesName
 import com.zelkatani.gui.view.DirectoryView
+import com.zelkatani.gui.view.EditorScope
+import com.zelkatani.gui.view.EditorView
 import com.zelkatani.model.GameLocation
+import com.zelkatani.model.Mod
 import tornadofx.Controller
+import tornadofx.find
 
 class DirectoryController : Controller() {
     private val directoryView: DirectoryView by inject()
@@ -24,10 +28,15 @@ class DirectoryController : Controller() {
 
     /**
      * Commit changes to what was entered.
-     * This parses the inputted files, TODO figure out storage, should Mod be an object?
+     * This parses the inputted files,
      * Validation of directories is done here.
      */
     fun commitGameLocation() {
+        // TODO: handle errors
+        val mod = Mod.from(GameLocation.modFolder)
+        val editorScope = EditorScope(mod)
 
+        val editorView = find<EditorView>(editorScope)
+        directoryView.replaceWith(editorView, centerOnScreen = true, sizeToScene = true)
     }
 }

@@ -4,7 +4,6 @@ import com.zelkatani.model.GameLocation
 import com.zelkatani.model.ModelBuilder
 import java.io.File
 
-// TODO: trees need to be added if they're useful
 /**
  * A model for the "map/" folder. Everything is relative to the folder.
  */
@@ -24,12 +23,9 @@ data class WorldMap(
         override fun from(file: File): WorldMap {
             val default = Default.from(file.resolve("default.map"))
 
-            // A dumb hack to resolve Paradox's lazy hack...
-            // v2/mod/Napoleon's Legacy/map -> v2/map
+            // definition file is a bit different, starts in game map folder first.
             val gameMapFolder = GameLocation.gameFolder.resolve("map")
             val definitionFile = gameMapFolder.resolve(default.definitions)
-            // this just brings us back to the map folder
-
 
             val definition = Definition.from(definitionFile)
             val adjacencies = Adjacencies.from(file.resolve(default.adjacencies))

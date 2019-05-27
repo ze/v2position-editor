@@ -8,7 +8,7 @@ import java.io.File
 import javax.imageio.ImageIO
 
 /**
- * A coordinate point for (x, y)  grids.
+ * A coordinate point for (x, y) bound grids.
  */
 typealias Point = Pair<Int, Int>
 
@@ -18,7 +18,7 @@ typealias Point = Pair<Int, Int>
 class Bitmap(bitmapFile: File) : Iterable<Point> {
 
     /**
-     * Create a Bitmap from a file. While useless,
+     * Create a Bitmap from a file. While not necessary,
      * it fits the style of other [ModelBuilder] implementations
      */
     companion object : ModelBuilder<Bitmap> {
@@ -27,11 +27,12 @@ class Bitmap(bitmapFile: File) : Iterable<Point> {
         }
     }
 
-    val bitmap: BufferedImage = ImageIO.read(bitmapFile)
+    private val bitmap: BufferedImage = ImageIO.read(bitmapFile)
+
     private val bitmapData = (bitmap.raster.dataBuffer as DataBufferByte).data
 
-    private val width = bitmap.width
-    private val height = bitmap.height
+    val width = bitmap.width
+    val height = bitmap.height
 
     private val colorMap = HashMap<Int, Color>(500)
 
@@ -58,11 +59,6 @@ class Bitmap(bitmapFile: File) : Iterable<Point> {
             val goodBlue = blue / 255.0
             Color(goodRed, goodGreen, goodBlue, 1.0)
         }
-    }
-
-    inline fun forEachColor(block: (Color) -> Unit) = forEach {
-        val color = get(it)
-        block(color)
     }
 
     override fun iterator() = BitmapIterator(width = width, height = height)

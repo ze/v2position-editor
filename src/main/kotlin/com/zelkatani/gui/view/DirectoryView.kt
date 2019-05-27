@@ -103,5 +103,7 @@ class DirectoryView : View(applicationName) {
                 }
             }
         }
+
+        this@DirectoryView.primaryStage.sizeToScene()
     }
 }
