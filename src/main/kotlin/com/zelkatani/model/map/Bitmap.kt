@@ -1,6 +1,7 @@
 package com.zelkatani.model.map
 
 import com.zelkatani.model.ModelBuilder
+import javafx.embed.swing.SwingFXUtils
 import javafx.scene.paint.Color
 import java.awt.image.BufferedImage
 import java.awt.image.DataBufferByte
@@ -28,6 +29,7 @@ class Bitmap(bitmapFile: File) : Iterable<Point> {
     }
 
     private val bitmap: BufferedImage = ImageIO.read(bitmapFile)
+    val image = SwingFXUtils.toFXImage(bitmap, null)
 
     private val bitmapData = (bitmap.raster.dataBuffer as DataBufferByte).data
 
@@ -54,10 +56,9 @@ class Bitmap(bitmapFile: File) : Iterable<Point> {
         val color = blue + green + red - 16777216
 
         return colorMap.computeIfAbsent(color) {
-            val goodRed = red / (2 * Short.MAX_VALUE) / 255.0
-            val goodGreen = green / 255 / 256.0
-            val goodBlue = blue / 255.0
-            Color(goodRed, goodGreen, goodBlue, 1.0)
+            val goodRed = red / (2 * Short.MAX_VALUE)
+            val goodGreen = green / 256
+            Color.rgb(goodRed, goodGreen, blue)
         }
     }
 
