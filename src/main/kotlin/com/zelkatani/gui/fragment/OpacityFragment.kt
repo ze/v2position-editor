@@ -1,12 +1,22 @@
 package com.zelkatani.gui.fragment
 
+import com.zelkatani.gui.EditorStylesheet
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import javafx.beans.property.DoubleProperty
 import javafx.beans.property.ObjectProperty
 import javafx.beans.property.SimpleDoubleProperty
+import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.value.ChangeListener
 import javafx.collections.FXCollections
+import javafx.collections.ObservableList
+import javafx.event.EventHandler
+import javafx.event.EventTarget
+import javafx.scene.Node
 import javafx.scene.control.ComboBox
 import javafx.scene.control.TextFormatter
 import javafx.scene.effect.BlendMode
+import javafx.scene.input.MouseEvent
 import javafx.util.converter.NumberStringConverter
 import tornadofx.*
 import kotlin.math.round
@@ -20,7 +30,8 @@ class OpacityScope(
     val riversOpacityProperty: DoubleProperty,
     val provincesBlendModeProperty: ObjectProperty<BlendMode>,
     val terrainBlendModeProperty: ObjectProperty<BlendMode>,
-    val riversBlendModeProperty: ObjectProperty<BlendMode>
+    val riversBlendModeProperty: ObjectProperty<BlendMode>,
+    val mapPaneChildren: ObservableList<Node>
 ) : Scope()
 
 /**
@@ -53,7 +64,6 @@ class OpacityFragment : Fragment("Layer Opacity") {
         "Screen" to BlendMode.SCREEN, "Exclusion" to BlendMode.EXCLUSION
     )
 
-
     private val sliderFilter: (TextFormatter.Change) -> Boolean = { change ->
         !change.isAdded || change.controlNewText.let {
             it.isInt() && it.toInt() in 0..255
@@ -80,34 +90,72 @@ class OpacityFragment : Fragment("Layer Opacity") {
         }
     }
 
-    private val provincesListener = ChangeListener<String> { _, _, newValue ->
-        opacityScope.provincesBlendModeProperty.value = blendModeMap[newValue]
-    }
+    private fun blendModeChangeListener(property: ObjectProperty<BlendMode>): ChangeListener<String> =
+        ChangeListener { _, _, newValue ->
+            property.value = blendModeMap[newValue]
+        }
 
-    private val terrainListener = ChangeListener<String> { _, _, newValue ->
-        opacityScope.terrainBlendModeProperty.value = blendModeMap[newValue]
-    }
+    private val provincesListener = blendModeChangeListener(opacityScope.provincesBlendModeProperty)
+    private val terrainListener = blendModeChangeListener(opacityScope.terrainBlendModeProperty)
+    private val riversListener = blendModeChangeListener(opacityScope.riversBlendModeProperty)
 
-    private val riversListener = ChangeListener<String> { _, _, newValue ->
-        opacityScope.riversBlendModeProperty.value = blendModeMap[newValue]
-    }
-
-    private val provincesComboBox = ComboBox(blendStringList).apply {
+    private fun ComboBox<String>.blendListener(listener: ChangeListener<String>) = apply {
         value = "Normal"
         prefWidth = 157.5
-        valueProperty().addListener(provincesListener)
+        valueProperty().addListener(listener)
     }
 
-    private val terrainComboBox = ComboBox(blendStringList).apply {
-        value = "Normal"
-        prefWidth = 157.5
-        valueProperty().addListener(terrainListener)
+    private val provincesComboBox = ComboBox(blendStringList).blendListener(provincesListener)
+    private val terrainComboBox = ComboBox(blendStringList).blendListener(terrainListener)
+    private val riversComboBox = ComboBox(blendStringList).blendListener(riversListener)
+
+    private fun EventTarget.faiconview(
+        icon: FontAwesomeIcon,
+        size: String,
+        op: FontAwesomeIconView.() -> Unit = {}
+    ): FontAwesomeIconView {
+        val iconView = FontAwesomeIconView(icon)
+        iconView.size = size
+        return opcr(this, iconView, op)
     }
 
-    private val riversComboBox = ComboBox(blendStringList).apply {
-        value = "Normal"
-        prefWidth = 157.5
-        valueProperty().addListener(riversListener)
+    private val selected: ObjectProperty<Field?> = SimpleObjectProperty()
+    private val selectedListener: ChangeListener<Field?> = ChangeListener { _, oldValue, newValue ->
+        oldValue?.removeClass(EditorStylesheet.selected)
+        oldValue?.addClass(EditorStylesheet.unselected)
+
+        newValue?.removeClass(EditorStylesheet.unselected)
+        newValue?.addClass(EditorStylesheet.selected)
+    }
+
+    private inline fun opacitySwapHandler(swap: Int, crossinline idxNotEqual: ObservableList<Node>.() -> Int) =
+        EventHandler<MouseEvent> {
+            val selectedField =
+                selected.value ?: throw RuntimeException("No field is selected, but one should be")
+
+            val selectedParent = selectedField.parent as Fieldset
+
+            val observableChildren = FXCollections.observableArrayList(selectedParent.children)
+            val idx = observableChildren?.indexOf(selectedField)
+            val notEqual = idxNotEqual(observableChildren)
+            if (idx != null && idx != notEqual) {
+                observableChildren.swap(idx, idx + swap)
+
+                // index should be reversed
+                val mapChildren = FXCollections.observableArrayList(opacityScope.mapPaneChildren)
+                val trueLast = mapChildren.lastIndex - 1
+                mapChildren.swap(trueLast - idx, trueLast - (idx + swap))
+                opacityScope.mapPaneChildren.setAll(mapChildren)
+            }
+
+            selectedParent.children.setAll(observableChildren)
+        }
+
+    /**
+     * Add the selected listener to the selected value.
+     */
+    override fun onDock() {
+        selected.addListener(selectedListener)
     }
 
     /**
@@ -121,26 +169,66 @@ class OpacityFragment : Fragment("Layer Opacity") {
         provincesComboBox.valueProperty().removeListener(provincesListener)
         terrainComboBox.valueProperty().removeListener(terrainListener)
         riversComboBox.valueProperty().removeListener(riversListener)
+        selected.removeListener(selectedListener)
     }
 
-    override val root = form {
-        fieldset {
-            field("Provinces") {
-                sliderfield(provincesValue)
-                opacityScope.provincesOpacityProperty.bind(provincesValue.divide(255.0))
-                add(provincesComboBox)
-            }
+    override val root = borderpane {
+        center = form {
+            fieldset {
+                field("Provinces") {
+                    sliderfield(provincesValue)
+                    opacityScope.provincesOpacityProperty.bind(provincesValue.divide(255.0))
+                    add(provincesComboBox)
 
-            field("Terrain") {
-                sliderfield(terrainValue)
-                opacityScope.terrainOpacityProperty.bind(terrainValue.divide(255.0))
-                add(terrainComboBox)
-            }
+                    addClass(EditorStylesheet.selected)
+                    selected.value = this
 
-            field("Rivers") {
-                sliderfield(riversValue)
-                opacityScope.riversOpacityProperty.bind(riversValue.divide(255.0))
-                add(riversComboBox)
+                    setOnMouseClicked {
+                        selected.value = this
+                    }
+                }
+
+                field("Terrain") {
+                    sliderfield(terrainValue)
+                    opacityScope.terrainOpacityProperty.bind(terrainValue.divide(255.0))
+                    add(terrainComboBox)
+
+                    addClass(EditorStylesheet.unselected)
+                    setOnMouseClicked {
+                        selected.value = this
+                    }
+                }
+
+                field("Rivers") {
+                    sliderfield(riversValue)
+                    opacityScope.riversOpacityProperty.bind(riversValue.divide(255.0))
+                    add(riversComboBox)
+
+                    addClass(EditorStylesheet.unselected)
+                    setOnMouseClicked {
+                        selected.value = this
+                    }
+                }
+            }
+        }
+
+        bottom = vbox {
+            separator()
+
+            hbox {
+                spacing = 5.0
+                padding = insets(10, 5)
+                faiconview(FontAwesomeIcon.ARROW_UP, "2em") {
+                    addClass(EditorStylesheet.pressedIcon)
+
+                    onMouseClicked = opacitySwapHandler(-1) { 0 }
+                }
+
+                faiconview(FontAwesomeIcon.ARROW_DOWN, "2em") {
+                    addClass(EditorStylesheet.pressedIcon)
+
+                    onMouseClicked = opacitySwapHandler(1) { lastIndex }
+                }
             }
         }
     }

@@ -16,24 +16,25 @@ import org.antlr.v4.runtime.tree.TerminalNode
  */
 class DefaultVisitor : DefaultBaseVisitor<Any>() {
 
-    var maxProvinces: Int? = null
-    var seaStarts: List<Int>? = null
-    var definitions: String? = null
-    var provinces: String? = null
-    var positions: String? = null
-    var terrain: String? = null
-    var rivers: String? = null
-    var terrainDefinition: String? = null
-    var treeDefinition: String? = null
-    var continent: String? = null
-    var adjacencies: String? = null
-    var region: String? = null
-    var regionSea: String? = null
-    var provinceFlagSprites: String? = null
-    var borderHeights: List<Int>? = null
-    var terrainSheetHeights: Int? = null
-    var tree: Int? = null
-    var borderCutoff: Float? = null
+    // not lateinit vars since we have primitives
+    private var maxProvinces: Int? = null
+    private var seaStarts: List<Int>? = null
+    private var definitions: String? = null
+    private var provinces: String? = null
+    private var positions: String? = null
+    private var terrain: String? = null
+    private var rivers: String? = null
+    private var terrainDefinition: String? = null
+    private var treeDefinition: String? = null
+    private var continent: String? = null
+    private var adjacencies: String? = null
+    private var region: String? = null
+    private var regionSea: String? = null
+    private var provinceFlagSprites: String? = null
+    private var borderHeights: List<Int>? = null
+    private var terrainSheetHeights: Int? = null
+    private var tree: Int? = null
+    private var borderCutoff: Float? = null
 
     override fun visitDefaults(ctx: DefaultParser.DefaultsContext): Default {
         val multiException = MultiException()

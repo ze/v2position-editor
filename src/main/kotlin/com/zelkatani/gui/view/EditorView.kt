@@ -3,8 +3,12 @@ package com.zelkatani.gui.view
 import com.zelkatani.gui.applicationName
 import com.zelkatani.gui.fragment.OpacityFragment
 import com.zelkatani.gui.fragment.OpacityScope
+import com.zelkatani.gui.fragment.PositionFragment
 import com.zelkatani.gui.pane.MapPane
 import com.zelkatani.model.Mod
+import javafx.beans.property.ObjectProperty
+import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.value.ChangeListener
 import javafx.stage.Screen
 import javafx.stage.StageStyle
 import tornadofx.*
@@ -20,7 +24,20 @@ class EditorScope(val mod: Mod) : Scope()
 class EditorView : View(applicationName) {
     override val scope = super.scope as EditorScope
     private val mod = scope.mod
-    private val mapPane = MapPane(mod.worldMap)
+
+    private val positionFragmentProperty: ObjectProperty<PositionFragment?> = SimpleObjectProperty()
+    private val positionFragmentListener: ChangeListener<PositionFragment?> = ChangeListener { _, oldValue, newValue ->
+        // TODO: ideally, commit changes. Close for now
+        oldValue?.close()
+        newValue?.openWindow(
+            stageStyle = StageStyle.UTILITY,
+            escapeClosesWindow = false,
+            block = false,
+            resizable = false
+        )
+    }
+
+    private val mapPane = MapPane(mod.worldMap, positionFragmentProperty)
 
     override fun onDock() {
         currentStage?.apply {
@@ -33,13 +50,16 @@ class EditorView : View(applicationName) {
             height = bounds.height / 1.2
         }
 
+        positionFragmentProperty.addListener(positionFragmentListener)
+
         val opacityScope = OpacityScope(
             mapPane.provincesOpacityProperty,
             mapPane.terrainOpacityProperty,
             mapPane.riversOpacityProperty,
             mapPane.provincesBlendModeProperty,
             mapPane.terrainBlendModeProperty,
-            mapPane.riversBlendModeProperty
+            mapPane.riversBlendModeProperty,
+            mapPane.children
         )
 
         val opacityFragment = find<OpacityFragment>(opacityScope)
@@ -49,6 +69,10 @@ class EditorView : View(applicationName) {
             block = false,
             resizable = false
         )
+    }
+
+    override fun onUndock() {
+        positionFragmentProperty.removeListener(positionFragmentListener)
     }
 
     override val root = borderpane {

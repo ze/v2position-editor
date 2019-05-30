@@ -2,8 +2,9 @@ package com.zelkatani.gui
 
 import com.zelkatani.gui.controller.DirectoryController
 import com.zelkatani.gui.view.DirectoryView
+import javafx.scene.paint.Color
 import javafx.stage.Stage
-import tornadofx.App
+import tornadofx.*
 
 const val applicationName = "Victoria 2 - Map Editor"
 const val preferencesName = "v2-map-editor"
@@ -12,7 +13,7 @@ const val preferencesName = "v2-map-editor"
  * The main GUI application.
  * The first view is the directory selector, which will lead into the editor.
  */
-class Editor : App(DirectoryView::class) {
+class Editor : App(DirectoryView::class, EditorStylesheet::class) {
     private val directoryController: DirectoryController by inject()
 
     init {
@@ -24,5 +25,39 @@ class Editor : App(DirectoryView::class) {
 
         directoryController.init()
         super.start(stage)
+    }
+}
+
+class EditorStylesheet : Stylesheet() {
+    companion object {
+        val selected by cssclass()
+        val unselected by cssclass()
+        val pressedIcon by cssclass()
+
+        private val fieldBorderColor = c("#0078D7")
+        private val fieldBackgroundColor = c("#BFDDF5")
+
+        private val iconColor = Color.DEEPSKYBLUE
+        private val iconColorPressed = iconColor.darker()
+    }
+
+    init {
+        selected {
+            borderColor += box(fieldBorderColor)
+            padding = box(2.px)
+            backgroundColor += fieldBackgroundColor
+        }
+
+        unselected {
+            borderColor += box(Color.TRANSPARENT)
+            padding = box(2.px)
+        }
+
+        pressedIcon {
+            fill = iconColor
+            and(pressed) {
+                fill = iconColorPressed
+            }
+        }
     }
 }

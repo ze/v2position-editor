@@ -18,6 +18,7 @@ dependencies {
 
     compile("org.apache.commons:commons-csv:1.5")
     compile("no.tornado:tornadofx:1.7.17")
+    compile("de.jensd:fontawesomefx:8.9")
 }
 
 val genSrcDir = file("src/main/gen")
