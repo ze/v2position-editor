@@ -31,14 +31,15 @@ class OpacityScope(
     val provincesBlendModeProperty: ObjectProperty<BlendMode>,
     val terrainBlendModeProperty: ObjectProperty<BlendMode>,
     val riversBlendModeProperty: ObjectProperty<BlendMode>,
-    val mapPaneChildren: ObservableList<Node>
+    val mapPaneChildren: ObservableList<Node>,
+    val positionFragmentChildren: ObjectProperty<MutableList<Node>>
 ) : Scope()
 
 /**
  * A utility fragment to handle opacity for the map canvas.
  */
 class OpacityFragment : Fragment("Layer Opacity") {
-    private val opacityScope = super.scope as OpacityScope
+    override val scope = super.scope as OpacityScope
 
     private val provincesValue = SimpleDoubleProperty(255.0)
     private val terrainValue = SimpleDoubleProperty(255.0)
@@ -95,9 +96,9 @@ class OpacityFragment : Fragment("Layer Opacity") {
             property.value = blendModeMap[newValue]
         }
 
-    private val provincesListener = blendModeChangeListener(opacityScope.provincesBlendModeProperty)
-    private val terrainListener = blendModeChangeListener(opacityScope.terrainBlendModeProperty)
-    private val riversListener = blendModeChangeListener(opacityScope.riversBlendModeProperty)
+    private val provincesListener = blendModeChangeListener(scope.provincesBlendModeProperty)
+    private val terrainListener = blendModeChangeListener(scope.terrainBlendModeProperty)
+    private val riversListener = blendModeChangeListener(scope.riversBlendModeProperty)
 
     private fun ComboBox<String>.blendListener(listener: ChangeListener<String>) = apply {
         value = "Normal"
@@ -142,10 +143,16 @@ class OpacityFragment : Fragment("Layer Opacity") {
                 observableChildren.swap(idx, idx + swap)
 
                 // index should be reversed
-                val mapChildren = FXCollections.observableArrayList(opacityScope.mapPaneChildren)
+                val mapChildren = FXCollections.observableArrayList(scope.mapPaneChildren)
+                val positionChildren = FXCollections.observableArrayList(scope.positionFragmentChildren.value)
+
+                // this is just the last index before the canvas pops up.
                 val trueLast = mapChildren.lastIndex - 1
                 mapChildren.swap(trueLast - idx, trueLast - (idx + swap))
-                opacityScope.mapPaneChildren.setAll(mapChildren)
+                positionChildren.swap(trueLast - idx, trueLast - (idx + swap))
+
+                scope.positionFragmentChildren.value = positionChildren
+                scope.mapPaneChildren.setAll(mapChildren)
             }
 
             selectedParent.children.setAll(observableChildren)
@@ -162,9 +169,9 @@ class OpacityFragment : Fragment("Layer Opacity") {
      * Remove all bindings when closed, they will be added when an instance is made.
      */
     override fun onUndock() {
-        opacityScope.provincesOpacityProperty.unbind()
-        opacityScope.terrainOpacityProperty.unbind()
-        opacityScope.riversOpacityProperty.unbind()
+        scope.provincesOpacityProperty.unbind()
+        scope.terrainOpacityProperty.unbind()
+        scope.riversOpacityProperty.unbind()
 
         provincesComboBox.valueProperty().removeListener(provincesListener)
         terrainComboBox.valueProperty().removeListener(terrainListener)
@@ -177,7 +184,7 @@ class OpacityFragment : Fragment("Layer Opacity") {
             fieldset {
                 field("Provinces") {
                     sliderfield(provincesValue)
-                    opacityScope.provincesOpacityProperty.bind(provincesValue.divide(255.0))
+                    scope.provincesOpacityProperty.bind(provincesValue.divide(255.0))
                     add(provincesComboBox)
 
                     addClass(EditorStylesheet.selected)
@@ -190,7 +197,7 @@ class OpacityFragment : Fragment("Layer Opacity") {
 
                 field("Terrain") {
                     sliderfield(terrainValue)
-                    opacityScope.terrainOpacityProperty.bind(terrainValue.divide(255.0))
+                    scope.terrainOpacityProperty.bind(terrainValue.divide(255.0))
                     add(terrainComboBox)
 
                     addClass(EditorStylesheet.unselected)
@@ -201,7 +208,7 @@ class OpacityFragment : Fragment("Layer Opacity") {
 
                 field("Rivers") {
                     sliderfield(riversValue)
-                    opacityScope.riversOpacityProperty.bind(riversValue.divide(255.0))
+                    scope.riversOpacityProperty.bind(riversValue.divide(255.0))
                     add(riversComboBox)
 
                     addClass(EditorStylesheet.unselected)

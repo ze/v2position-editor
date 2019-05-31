@@ -26,8 +26,11 @@ class EditorView : View(applicationName) {
     private val mod = scope.mod
 
     private val positionFragmentProperty: ObjectProperty<PositionFragment?> = SimpleObjectProperty()
+    // its bad design to modify observed values, but I don't know any other way to do this.
     private val positionFragmentListener: ChangeListener<PositionFragment?> = ChangeListener { _, oldValue, newValue ->
-        // TODO: ideally, commit changes. Close for now
+        // TODO: find a way to prohibit triggering it multiple times. Make it blocking?
+        // TODO: If blocking, allow for the opacity control to be used.
+        // TODO: Ideally, commit changes. Close for now
         oldValue?.close()
         newValue?.openWindow(
             stageStyle = StageStyle.UTILITY,
@@ -59,7 +62,8 @@ class EditorView : View(applicationName) {
             mapPane.provincesBlendModeProperty,
             mapPane.terrainBlendModeProperty,
             mapPane.riversBlendModeProperty,
-            mapPane.children
+            mapPane.children,
+            mapPane.positionFragmentChildren
         )
 
         val opacityFragment = find<OpacityFragment>(opacityScope)

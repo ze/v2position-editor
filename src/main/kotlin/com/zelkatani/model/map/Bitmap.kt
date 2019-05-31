@@ -2,6 +2,7 @@ package com.zelkatani.model.map
 
 import com.zelkatani.model.ModelBuilder
 import javafx.embed.swing.SwingFXUtils
+import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
 import java.awt.image.BufferedImage
 import java.awt.image.DataBufferByte
@@ -29,7 +30,7 @@ class Bitmap(bitmapFile: File) : Iterable<Point> {
     }
 
     private val bitmap: BufferedImage = ImageIO.read(bitmapFile)
-    val image = SwingFXUtils.toFXImage(bitmap, null)
+    val image: WritableImage = SwingFXUtils.toFXImage(bitmap, null)
 
     private val bitmapData = (bitmap.raster.dataBuffer as DataBufferByte).data
 
