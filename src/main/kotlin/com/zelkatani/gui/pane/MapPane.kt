@@ -7,17 +7,19 @@ import javafx.beans.property.DoubleProperty
 import javafx.beans.property.ObjectProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.event.EventHandler
-import javafx.geometry.Rectangle2D
 import javafx.scene.Node
 import javafx.scene.canvas.Canvas
 import javafx.scene.effect.BlendMode
 import javafx.scene.image.ImageView
+import javafx.scene.image.WritableImage
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import tornadofx.add
 import tornadofx.find
+import java.awt.Rectangle
 import java.lang.Math.round
+import kotlin.math.roundToInt
 
 /**
  * The map pane that visualizes [WorldMap] instances.
@@ -35,9 +37,9 @@ class MapPane(private val worldMap: WorldMap, private val positionFragmentProper
     // they are the same as their above counterpart but with a different
     // viewport associated with them. Other than that, they are effectively
     // the same.
-    private val positionProvincesView = ImageView(worldMap.provincesBMP.image)
-    private val positionTerrainView = ImageView(worldMap.terrainBMP.image)
-    private val positionRiversView = ImageView(worldMap.riversBMP.image)
+    private val positionProvincesView = ImageView()
+    private val positionTerrainView = ImageView()
+    private val positionRiversView = ImageView()
     private val positionCanvas = Canvas()
     val positionFragmentChildren: ObjectProperty<MutableList<Node>> =
         SimpleObjectProperty(
@@ -49,7 +51,7 @@ class MapPane(private val worldMap: WorldMap, private val positionFragmentProper
             )
         )
 
-    private fun ImageView.mirrorProperties(iv: ImageView) {
+    private fun ImageView.setPositionProperties(iv: ImageView) {
         scaleY = iv.scaleY
         opacityProperty().bind(iv.opacityProperty())
         blendModeProperty().bind(iv.blendModeProperty())
@@ -61,9 +63,9 @@ class MapPane(private val worldMap: WorldMap, private val positionFragmentProper
         terrainImageView.scaleY = -1.0
         riversImageView.scaleY = -1.0
 
-        positionProvincesView.mirrorProperties(provincesImageView)
-        positionTerrainView.mirrorProperties(terrainImageView)
-        positionRiversView.mirrorProperties(riversImageView)
+        positionProvincesView.setPositionProperties(provincesImageView)
+        positionTerrainView.setPositionProperties(terrainImageView)
+        positionRiversView.setPositionProperties(riversImageView)
     }
 
     val provincesOpacityProperty: DoubleProperty = provincesImageView.opacityProperty()
@@ -98,7 +100,7 @@ class MapPane(private val worldMap: WorldMap, private val positionFragmentProper
         positionFragmentProperty.value = getPositionFragment(color)
     }
 
-    private fun getColorBounds(color: Color): Rectangle2D {
+    private fun getColorBounds(color: Color, padding: Int): Rectangle {
         var minX = Int.MAX_VALUE
         var maxX = 0
         var minY = Int.MAX_VALUE
@@ -117,15 +119,49 @@ class MapPane(private val worldMap: WorldMap, private val positionFragmentProper
             }
         }
 
-        return Rectangle2D(minY.toDouble(), minX.toDouble(), (maxY - minY).toDouble(), (maxX - minX).toDouble())
+        return Rectangle(
+            minY - padding,
+            minX - padding,
+            (maxY - minY) + 2 * padding,
+            (maxX - minX) + 2 * padding
+        )
+    }
+
+    private fun ImageView.zoomBounds(bounds: Rectangle, imageView: ImageView, zoom: Int) {
+        val readerImage = imageView.image
+        val reader = readerImage.pixelReader
+        val writableImage = WritableImage(bounds.width * zoom, bounds.height * zoom)
+        val writer = writableImage.pixelWriter
+
+        for (x in 0 until bounds.width) {
+            for (y in 0 until bounds.height) {
+                val xi = x + bounds.x
+                val yi = y + bounds.y
+                val argb =
+                    if (xi < 0 || yi < 0 || xi >= readerImage.width.toInt() || yi >= readerImage.height.toInt()) {
+                        0xF
+                    } else {
+                        reader.getArgb(xi, yi)
+                    }
+                for (i in 0 until zoom) {
+                    for (j in 0 until zoom) {
+                        writer.setArgb(x * zoom + i, y * zoom + j, argb)
+                    }
+                }
+            }
+        }
+
+        image = writableImage
     }
 
     private fun getPositionFragment(color: Color): PositionFragment {
-        val bounds = getColorBounds(color)
+        val bounds = getColorBounds(color, 10)
 
-        positionProvincesView.viewport = bounds
-        positionTerrainView.viewport = bounds
-        positionRiversView.viewport = bounds
+        val ratio = (500.0 / bounds.height).roundToInt()
+
+        positionProvincesView.zoomBounds(bounds, provincesImageView, ratio)
+        positionTerrainView.zoomBounds(bounds, terrainImageView, ratio)
+        positionRiversView.zoomBounds(bounds, riversImageView, ratio)
 
         val positionScope = PositionScope(positionFragmentChildren)
         return find(positionScope)
