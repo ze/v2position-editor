@@ -4,6 +4,8 @@ import com.zelkatani.gui.applicationName
 import com.zelkatani.gui.controller.DirectoryController
 import com.zelkatani.gui.preferencesName
 import com.zelkatani.model.GameLocation
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import javafx.beans.binding.Bindings
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.ButtonBar
@@ -28,7 +30,7 @@ class DirectoryView : View(applicationName) {
         spacing = 7.5
         prefWidth = 500.0
 
-        fieldset("Game Paths") {
+        fieldset("Game Paths", FontAwesomeIconView(FontAwesomeIcon.FOLDER)) {
             vbox(10) {
                 hbox(10) {
                     textfield {
@@ -86,8 +88,9 @@ class DirectoryView : View(applicationName) {
             button("Save", ButtonBar.ButtonData.OK_DONE) {
                 isDefaultButton = true
 
-                val booleanBinding = Bindings.or(model.gamePath.isBlank(), model.modPath.isBlank())
-                disableProperty().bind(booleanBinding)
+                disableWhen {
+                    Bindings.or(model.gamePath.isBlank(), model.modPath.isBlank())
+                }
 
                 action {
                     model.commit {

@@ -31,7 +31,10 @@ class EditorView : View(applicationName) {
         // TODO: find a way to prohibit triggering it multiple times. Make it blocking?
         // TODO: If blocking, allow for the opacity control to be used.
         // TODO: Ideally, commit changes. Close for now
-        oldValue?.close()
+        if (oldValue?.isDocked == true) {
+            oldValue.close()
+        }
+
         newValue?.openWindow(
             stageStyle = StageStyle.UTILITY,
             escapeClosesWindow = false,

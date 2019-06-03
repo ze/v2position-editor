@@ -163,7 +163,15 @@ class MapPane(private val worldMap: WorldMap, private val positionFragmentProper
         positionTerrainView.zoomBounds(bounds, terrainImageView, ratio)
         positionRiversView.zoomBounds(bounds, riversImageView, ratio)
 
-        val positionScope = PositionScope(positionFragmentChildren)
+        val colorRecord = worldMap.definition.colors[color]
+        colorRecord ?: throw RuntimeException("Color should have an associated province id, but does not have one.")
+
+        val provinceId = colorRecord.province
+        val positionData = worldMap.positions[provinceId]
+        // TODO: is this actually required or is there just some default defined if none?
+        positionData ?: throw RuntimeException("Province has no position data defined.")
+
+        val positionScope = PositionScope(positionFragmentChildren, bounds, provinceId, positionData)
         return find(positionScope)
     }
 

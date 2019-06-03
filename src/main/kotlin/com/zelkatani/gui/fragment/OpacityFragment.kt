@@ -74,13 +74,13 @@ class OpacityFragment : Fragment("Layer Opacity") {
     /**
      * Add a slider and textfield that can control each other with integer bounds.
      */
-    private fun Field.sliderfield(property: SimpleDoubleProperty) {
+    private fun Field.sliderfield(property: DoubleProperty) {
         slider(0..255) {
             valueProperty().addListener { _, _, newValue ->
                 value = round(newValue.toDouble())
             }
 
-            property.bindBidirectional(valueProperty())
+            bind(property)
         }
 
         textfield(property, NumberStringConverter()) {
