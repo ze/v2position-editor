@@ -1,6 +1,6 @@
 package com.zelkatani.gui.view
 
-import com.zelkatani.gui.applicationName
+import com.zelkatani.gui.APPLICATION_NAME
 import com.zelkatani.gui.fragment.OpacityFragment
 import com.zelkatani.gui.fragment.OpacityScope
 import com.zelkatani.gui.fragment.PositionFragment
@@ -21,7 +21,7 @@ class EditorScope(val mod: Mod) : Scope()
 /**
  * The view for the [mod] provided. Contains a layer view and control.
  */
-class EditorView : View(applicationName) {
+class EditorView : View(APPLICATION_NAME) {
     override val scope = super.scope as EditorScope
     private val mod = scope.mod
 
@@ -43,7 +43,7 @@ class EditorView : View(applicationName) {
         )
     }
 
-    private val mapPane = MapPane(mod.worldMap, positionFragmentProperty)
+    private val mapPane = MapPane(mod.worldMap, mod.localization, positionFragmentProperty)
 
     override fun onDock() {
         currentStage?.apply {

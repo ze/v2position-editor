@@ -29,7 +29,7 @@ data class Default(
     val borderHeights: List<Int>,
     val terrainSheetHeights: Int,
     val tree: Int,
-    val borderCutoff: Float
+    val borderCutoff: Double
 ) {
     companion object : ModelBuilder<Default> {
         override fun from(file: File): Default {

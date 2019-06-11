@@ -3,12 +3,15 @@ package com.zelkatani.model
 import com.zelkatani.model.map.WorldMap
 import java.io.File
 
-class Mod(val worldMap: WorldMap) {
+data class Mod(val worldMap: WorldMap, val localization: Localization) {
     companion object : ModelBuilder<Mod> {
         override fun from(file: File): Mod {
             val modFolder = GameLocation.modFolder
+            val gameFolder = GameLocation.gameFolder
+
             val worldMap = WorldMap.from(modFolder.resolve("map"))
-            return Mod(worldMap)
+            val localization = Localization.from(gameFolder.resolve("localisation"))
+            return Mod(worldMap, localization)
         }
     }
 }

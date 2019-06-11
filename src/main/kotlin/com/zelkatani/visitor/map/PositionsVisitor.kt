@@ -133,10 +133,10 @@ class PositionsVisitor : PositionsBaseVisitor<Any>() {
     }
 
     override fun visitXPosition(ctx: PositionsParser.XPositionContext) =
-        ctx.getNumber().toFloat()
+        ctx.getNumber()
 
     override fun visitYPosition(ctx: PositionsParser.YPositionContext) =
-        ctx.getNumber().toFloat()
+        ctx.getNumber()
 
     private fun ParserRuleContext.getNumber() = getNumber(INT, FLOAT)
 }

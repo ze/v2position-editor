@@ -6,8 +6,8 @@ import javafx.scene.paint.Color
 import javafx.stage.Stage
 import tornadofx.*
 
-const val applicationName = "Victoria 2 - Map Editor"
-const val preferencesName = "v2-map-editor"
+const val APPLICATION_NAME = "Victoria 2 - Map Editor"
+const val PREFERENCES_NAME = "v2-map-editor"
 
 /**
  * The main GUI application.
@@ -17,7 +17,7 @@ class Editor : App(DirectoryView::class, EditorStylesheet::class) {
     private val directoryController: DirectoryController by inject()
 
     init {
-        System.setProperty("apple.awt.application.name", applicationName)
+        System.setProperty("apple.awt.application.name", APPLICATION_NAME)
     }
 
     override fun start(stage: Stage) {
@@ -34,6 +34,7 @@ class EditorStylesheet : Stylesheet() {
         val unselected by cssclass()
         val pressedIcon by cssclass()
 
+        // credits to paint.net for these colors.
         private val fieldBorderColor = c("#0078D7")
         private val fieldBackgroundColor = c("#BFDDF5")
 

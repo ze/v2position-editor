@@ -1,6 +1,6 @@
 package com.zelkatani.gui.controller
 
-import com.zelkatani.gui.preferencesName
+import com.zelkatani.gui.PREFERENCES_NAME
 import com.zelkatani.gui.view.DirectoryView
 import com.zelkatani.gui.view.EditorScope
 import com.zelkatani.gui.view.EditorView
@@ -17,7 +17,7 @@ class DirectoryController : Controller() {
      * If they exist, they are NOT committed, but loaded in from [DirectoryView].
      */
     fun init() {
-        preferences(preferencesName) {
+        preferences(PREFERENCES_NAME) {
             val gamePath = get("game_path", null) ?: return@preferences
             val modPath = get("mod_path", null) ?: return@preferences
 

@@ -8,7 +8,7 @@ import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import java.io.File
 
-typealias Coordinate = Pair<Float, Float>
+typealias Coordinate = Pair<Double, Double>
 
 data class Positions(val positions: Map<Int, PositionData>) {
     companion object : ModelBuilder<Positions> {
@@ -36,7 +36,7 @@ data class ObjectCoordinate(val type: ObjectType, val coordinate: Coordinate) : 
     }
 }
 
-typealias BuildingTransform = Pair<BuildingType, Number>
+typealias BuildingTransform = Pair<BuildingType, Double>
 
 data class BuildingNudgeBlock(val transforms: List<BuildingTransform>) : PositionInfo()
 data class BuildingRotation(val transforms: List<BuildingTransform>) : PositionInfo()
@@ -49,8 +49,8 @@ data class RailroadVisibility(val visibilities: List<Int>) : PositionInfo()
 data class BuildingPosition(val positions: List<BuildingPositionData>) : PositionInfo()
 data class SpawnRailwayTrack(val coordinates: List<Coordinate>) : PositionInfo()
 
-data class TextRotation(val rotation: Number) : PositionInfo()
-data class TextScale(val scale: Number) : PositionInfo()
+data class TextRotation(val rotation: Double) : PositionInfo()
+data class TextScale(val scale: Double) : PositionInfo()
 
 data class BuildingPositionData(val positionType: PositionType, val coordinate: Coordinate) {
     enum class PositionType {

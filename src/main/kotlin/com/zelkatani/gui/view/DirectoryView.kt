@@ -1,8 +1,8 @@
 package com.zelkatani.gui.view
 
-import com.zelkatani.gui.applicationName
+import com.zelkatani.gui.APPLICATION_NAME
+import com.zelkatani.gui.PREFERENCES_NAME
 import com.zelkatani.gui.controller.DirectoryController
-import com.zelkatani.gui.preferencesName
 import com.zelkatani.model.GameLocation
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
@@ -13,7 +13,7 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import tornadofx.*
 
-class DirectoryView : View(applicationName) {
+class DirectoryView : View(APPLICATION_NAME) {
     private val directoryController: DirectoryController by inject()
 
     private val model = object : ViewModel() {
@@ -94,7 +94,7 @@ class DirectoryView : View(applicationName) {
 
                 action {
                     model.commit {
-                        preferences(preferencesName) {
+                        preferences(PREFERENCES_NAME) {
                             put("game_path", model.gamePath.value)
                             put("mod_path", model.modPath.value)
                         }

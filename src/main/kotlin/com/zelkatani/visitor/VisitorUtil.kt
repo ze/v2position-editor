@@ -18,19 +18,19 @@ fun TerminalNode.asInt() = text.toInt()
 /**
  * Get the representation of this [TerminalNode] as a float.
  */
-fun TerminalNode.asFloat() = text.toFloat()
+fun TerminalNode.asDouble() = text.toDouble()
 
 /**
- * Get a [Number] from a specified [intToken] and [floatToken].
+ * Get a [Double] from a specified [intToken] and [floatToken].
  */
-fun ParserRuleContext.getNumber(intToken: Int, floatToken: Int): Number {
+fun ParserRuleContext.getNumber(intToken: Int, floatToken: Int): Double {
     val int = getToken(intToken, 0)
     val float = getToken(floatToken, 0)
     check(float != null || int != null) {
         "There must be a FLOAT or INT token."
     }
 
-    return float?.asFloat() ?: int.asInt()
+    return (float ?: int).asDouble()
 }
 
 val ParserRuleContext.line

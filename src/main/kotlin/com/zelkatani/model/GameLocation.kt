@@ -12,4 +12,9 @@ object GameLocation {
     // lazily create these files to avoid early access error.
     val gameFolder by lazy { File(gamePath) }
     val modFolder by lazy { File(modPath) }
+
+    fun fileFromMod(file: File): File {
+        val relativePath = file.toRelativeString(gameFolder)
+        return modFolder.resolve(relativePath)
+    }
 }

@@ -3,12 +3,15 @@ package com.zelkatani.visitor.map
 import com.zelkatani.MultiException
 import com.zelkatani.antlr.DefaultBaseVisitor
 import com.zelkatani.antlr.DefaultParser
+import com.zelkatani.antlr.DefaultParser.FLOAT
+import com.zelkatani.antlr.DefaultParser.INT
 import com.zelkatani.model.map.Default
 import com.zelkatani.requireNoExceptions
-import com.zelkatani.visitor.asFloat
 import com.zelkatani.visitor.asInt
 import com.zelkatani.visitor.asUnquotedString
+import com.zelkatani.visitor.getNumber
 import com.zelkatani.visitor.line
+import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.TerminalNode
 
 /**
@@ -34,7 +37,7 @@ class DefaultVisitor : DefaultBaseVisitor<Any>() {
     private var borderHeights: List<Int>? = null
     private var terrainSheetHeights: Int? = null
     private var tree: Int? = null
-    private var borderCutoff: Float? = null
+    private var borderCutoff: Double? = null
 
     override fun visitDefaults(ctx: DefaultParser.DefaultsContext): Default {
         val multiException = MultiException()
@@ -157,10 +160,8 @@ class DefaultVisitor : DefaultBaseVisitor<Any>() {
     }
 
     override fun visitBorderCutoffExpr(ctx: DefaultParser.BorderCutoffExprContext) {
-        borderCutoff = (if (ctx.FLOAT() != null) {
-            ctx.FLOAT()
-        } else {
-            ctx.INT()
-        }).asFloat()
+        borderCutoff = ctx.getNumber()
     }
+
+    private fun ParserRuleContext.getNumber() = getNumber(INT, FLOAT)
 }

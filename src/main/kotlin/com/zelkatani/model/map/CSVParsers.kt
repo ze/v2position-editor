@@ -1,6 +1,7 @@
 package com.zelkatani.model.map
 
 import com.zelkatani.MultiException
+import com.zelkatani.model.removeComments
 import com.zelkatani.requireNoExceptions
 import javafx.scene.paint.Color
 import org.apache.commons.csv.CSVFormat
@@ -8,14 +9,6 @@ import org.apache.commons.csv.CSVParser
 import org.apache.commons.csv.CSVRecord
 import java.io.File
 import kotlin.collections.set
-
-/**
- * Get a list of all records without any comments.
- */
-private fun CSVParser.removeComments() = filter {
-    val first = it[0].trimStart()
-    first.isNotBlank() && first[0] != '#'
-}
 
 /**
  * Performs the given [action] on every line that starts with a province.

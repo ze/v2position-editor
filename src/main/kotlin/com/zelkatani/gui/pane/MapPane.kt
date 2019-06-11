@@ -1,7 +1,10 @@
 package com.zelkatani.gui.pane
 
+import com.zelkatani.gui.fragment.POSITION_FRAGMENT_HEIGHT
 import com.zelkatani.gui.fragment.PositionFragment
 import com.zelkatani.gui.fragment.PositionScope
+import com.zelkatani.model.Localization
+import com.zelkatani.model.LocalizationLanguage
 import com.zelkatani.model.map.WorldMap
 import javafx.beans.property.DoubleProperty
 import javafx.beans.property.ObjectProperty
@@ -24,7 +27,11 @@ import kotlin.math.roundToInt
 /**
  * The map pane that visualizes [WorldMap] instances.
  */
-class MapPane(private val worldMap: WorldMap, private val positionFragmentProperty: ObjectProperty<PositionFragment?>) :
+class MapPane(
+    private val worldMap: WorldMap,
+    private val localization: Localization,
+    private val positionFragmentProperty: ObjectProperty<PositionFragment?>
+) :
     StackPane() {
 
     private val canvas = Canvas()
@@ -100,7 +107,7 @@ class MapPane(private val worldMap: WorldMap, private val positionFragmentProper
         positionFragmentProperty.value = getPositionFragment(color)
     }
 
-    private fun getColorBounds(color: Color, padding: Int): Rectangle {
+    private fun getColorBounds(color: Color): Rectangle {
         var minX = Int.MAX_VALUE
         var maxX = 0
         var minY = Int.MAX_VALUE
@@ -120,10 +127,10 @@ class MapPane(private val worldMap: WorldMap, private val positionFragmentProper
         }
 
         return Rectangle(
-            minY - padding,
-            minX - padding,
-            (maxY - minY) + 2 * padding,
-            (maxX - minX) + 2 * padding
+            minY,
+            minX,
+            maxY - minY,
+            maxX - minX
         )
     }
 
@@ -139,7 +146,7 @@ class MapPane(private val worldMap: WorldMap, private val positionFragmentProper
                 val yi = y + bounds.y
                 val argb =
                     if (xi < 0 || yi < 0 || xi >= readerImage.width.toInt() || yi >= readerImage.height.toInt()) {
-                        0xF
+                        Int.MIN_VALUE
                     } else {
                         reader.getArgb(xi, yi)
                     }
@@ -155,9 +162,10 @@ class MapPane(private val worldMap: WorldMap, private val positionFragmentProper
     }
 
     private fun getPositionFragment(color: Color): PositionFragment {
-        val bounds = getColorBounds(color, 10)
+        val bounds = getColorBounds(color)
+        bounds.grow(10, 10)
 
-        val ratio = (500.0 / bounds.height).roundToInt()
+        val ratio = (POSITION_FRAGMENT_HEIGHT / bounds.height).roundToInt()
 
         positionProvincesView.zoomBounds(bounds, provincesImageView, ratio)
         positionTerrainView.zoomBounds(bounds, terrainImageView, ratio)
@@ -168,10 +176,15 @@ class MapPane(private val worldMap: WorldMap, private val positionFragmentProper
 
         val provinceId = colorRecord.province
         val positionData = worldMap.positions[provinceId]
+
+        val provinceString = "PROV$provinceId"
+        val provinceName = localization[provinceString, LocalizationLanguage.ENGLISH] ?: provinceString
+
         // TODO: is this actually required or is there just some default defined if none?
         positionData ?: throw RuntimeException("Province has no position data defined.")
 
-        val positionScope = PositionScope(positionFragmentChildren, bounds, provinceId, positionData)
+        val positionScope =
+            PositionScope(positionFragmentChildren, bounds, ratio, provinceId, provinceName, positionData)
         return find(positionScope)
     }
 

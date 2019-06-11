@@ -1,17 +1,15 @@
 package com.zelkatani.gui.fragment
 
 import com.zelkatani.gui.EditorStylesheet
+import com.zelkatani.gui.faiconview
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import javafx.beans.property.DoubleProperty
 import javafx.beans.property.ObjectProperty
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ChangeListener
-import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.event.EventHandler
-import javafx.event.EventTarget
 import javafx.scene.Node
 import javafx.scene.control.ComboBox
 import javafx.scene.control.TextFormatter
@@ -45,7 +43,9 @@ class OpacityFragment : Fragment("Layer Opacity") {
     private val terrainValue = SimpleDoubleProperty(255.0)
     private val riversValue = SimpleDoubleProperty(255.0)
 
-    private val blendStringList = FXCollections.observableArrayList(
+    private val range = 0..255
+
+    private val blendStringList = listOf(
         "Normal", "Multiply", "Add",
         "Color Burn", "Color Dodge",
         "Overlay",
@@ -53,7 +53,7 @@ class OpacityFragment : Fragment("Layer Opacity") {
         "Difference",
         "Lighten", "Darken",
         "Screen", "Exclusion"
-    )
+    ).observable()
 
     private val blendModeMap = mapOf(
         "Normal" to null, "Multiply" to BlendMode.MULTIPLY, "Add" to BlendMode.ADD,
@@ -67,7 +67,7 @@ class OpacityFragment : Fragment("Layer Opacity") {
 
     private val sliderFilter: (TextFormatter.Change) -> Boolean = { change ->
         !change.isAdded || change.controlNewText.let {
-            it.isInt() && it.toInt() in 0..255
+            it.isInt() && it.toInt() in range
         }
     }
 
@@ -75,16 +75,16 @@ class OpacityFragment : Fragment("Layer Opacity") {
      * Add a slider and textfield that can control each other with integer bounds.
      */
     private fun Field.sliderfield(property: DoubleProperty) {
-        slider(0..255) {
-            valueProperty().addListener { _, _, newValue ->
-                value = round(newValue.toDouble())
+        slider(range) {
+            valueProperty().onChange {
+                value = round(it)
             }
 
             bind(property)
         }
 
         textfield(property, NumberStringConverter()) {
-            // have to set the text here to 100 otherwise it ignores property's default value...
+            // have to set the text here to 255 otherwise it ignores property's default value...
             text = "255"
             prefWidth = 45.0
             filterInput(sliderFilter)
@@ -110,16 +110,6 @@ class OpacityFragment : Fragment("Layer Opacity") {
     private val terrainComboBox = ComboBox(blendStringList).blendListener(terrainListener)
     private val riversComboBox = ComboBox(blendStringList).blendListener(riversListener)
 
-    private fun EventTarget.faiconview(
-        icon: FontAwesomeIcon,
-        size: String,
-        op: FontAwesomeIconView.() -> Unit = {}
-    ): FontAwesomeIconView {
-        val iconView = FontAwesomeIconView(icon)
-        iconView.size = size
-        return opcr(this, iconView, op)
-    }
-
     private val selected: ObjectProperty<Field?> = SimpleObjectProperty()
     private val selectedListener: ChangeListener<Field?> = ChangeListener { _, oldValue, newValue ->
         oldValue?.removeClass(EditorStylesheet.selected)
@@ -136,15 +126,15 @@ class OpacityFragment : Fragment("Layer Opacity") {
 
             val selectedParent = selectedField.parent as Fieldset
 
-            val observableChildren = FXCollections.observableArrayList(selectedParent.children)
-            val idx = observableChildren?.indexOf(selectedField)
+            val observableChildren = selectedParent.children.observable()
+            val idx = observableChildren.indexOf(selectedField)
             val notEqual = idxNotEqual(observableChildren)
-            if (idx != null && idx != notEqual) {
+            if (idx != notEqual) {
                 observableChildren.swap(idx, idx + swap)
 
                 // index should be reversed
-                val mapChildren = FXCollections.observableArrayList(scope.mapPaneChildren)
-                val positionChildren = FXCollections.observableArrayList(scope.positionFragmentChildren.value)
+                val mapChildren = scope.mapPaneChildren.observable()
+                val positionChildren = scope.positionFragmentChildren.value.observable()
 
                 // this is just the last index before the canvas pops up.
                 val trueLast = mapChildren.lastIndex - 1
