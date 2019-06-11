@@ -83,7 +83,7 @@ class PositionFragment : Fragment() {
     // The game NEVER mentions aeroplane_factory positioning... It should be a property but it'll stay unused for now
 
     private val nodesListener: ChangeListener<MutableList<Node>> = ChangeListener { _, _, newValue ->
-        (root.center as StackPane).children.setAll(newValue)
+        stack.children.setAll(newValue)
     }
 
     private val numberStringConverter = NumberStringConverter(NumberFormat.getNumberInstance().apply {
@@ -284,6 +284,8 @@ class PositionFragment : Fragment() {
         text(textPositionProperty, textScaleProperty, textRotationProperty, canvasBottom)
     }
 
+    private lateinit var stack: StackPane
+
     override val root = borderpane {
         left = vbox {
             scrollpane(fitToWidth = true) {
@@ -346,8 +348,10 @@ class PositionFragment : Fragment() {
             vbarPolicy = ScrollPane.ScrollBarPolicy.NEVER
 
             stackpane {
-                scope.nodes.value.forEach {
-                    add(it)
+                stack = stackpane {
+                    scope.nodes.value.forEach {
+                        add(it)
+                    }
                 }
 
                 bindPositionProperties(heightProperty())

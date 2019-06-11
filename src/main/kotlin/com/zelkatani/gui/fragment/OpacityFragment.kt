@@ -8,6 +8,7 @@ import javafx.beans.property.ObjectProperty
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ChangeListener
+import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.event.EventHandler
 import javafx.scene.Node
@@ -119,6 +120,8 @@ class OpacityFragment : Fragment("Layer Opacity") {
         newValue?.addClass(EditorStylesheet.selected)
     }
 
+    private fun <T> List<T>.observableArrayList(): ObservableList<T> = FXCollections.observableArrayList(this)
+
     private inline fun opacitySwapHandler(swap: Int, crossinline idxNotEqual: ObservableList<Node>.() -> Int) =
         EventHandler<MouseEvent> {
             val selectedField =
@@ -126,15 +129,15 @@ class OpacityFragment : Fragment("Layer Opacity") {
 
             val selectedParent = selectedField.parent as Fieldset
 
-            val observableChildren = selectedParent.children.observable()
+            val observableChildren = selectedParent.children.observableArrayList()
             val idx = observableChildren.indexOf(selectedField)
             val notEqual = idxNotEqual(observableChildren)
             if (idx != notEqual) {
                 observableChildren.swap(idx, idx + swap)
 
                 // index should be reversed
-                val mapChildren = scope.mapPaneChildren.observable()
-                val positionChildren = scope.positionFragmentChildren.value.observable()
+                val mapChildren = scope.mapPaneChildren.observableArrayList()
+                val positionChildren = scope.positionFragmentChildren.value.observableArrayList()
 
                 // this is just the last index before the canvas pops up.
                 val trueLast = mapChildren.lastIndex - 1
