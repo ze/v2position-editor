@@ -28,6 +28,9 @@ class Editor : App(DirectoryView::class, EditorStylesheet::class) {
     }
 }
 
+/**
+ * The [Stylesheet] for the [Editor] application.
+ */
 class EditorStylesheet : Stylesheet() {
     companion object {
         val selected by cssclass()

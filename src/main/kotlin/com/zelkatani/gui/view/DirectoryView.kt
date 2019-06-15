@@ -13,14 +13,26 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import tornadofx.*
 
+/**
+ * The starting [View] for the application. Defines the game and mod path.
+ */
 class DirectoryView : View(APPLICATION_NAME) {
+    /**
+     * The [DirectoryController] for this view.
+     */
     private val directoryController: DirectoryController by inject()
 
+    /**
+     * The [ViewModel] for defining the game and mod path.
+     */
     private val model = object : ViewModel() {
         val gamePath = bind { SimpleStringProperty() }
         val modPath = bind { SimpleStringProperty() }
     }
 
+    /**
+     * Set the values of [model] if they already exist.
+     */
     override fun onBeforeShow() {
         model.gamePath.value = GameLocation.gamePath.orEmpty()
         model.modPath.value = GameLocation.modPath.orEmpty()

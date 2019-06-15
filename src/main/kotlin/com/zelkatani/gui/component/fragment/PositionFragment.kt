@@ -1,4 +1,4 @@
-package com.zelkatani.gui.fragment
+package com.zelkatani.gui.component.fragment
 
 import com.zelkatani.gui.faiconview
 import com.zelkatani.model.map.*
@@ -21,7 +21,9 @@ import javafx.scene.control.TextField
 import javafx.scene.control.TextFormatter
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
+import javafx.scene.input.MouseEvent
 import javafx.scene.layout.StackPane
+import javafx.scene.paint.Color
 import javafx.scene.text.Text
 import javafx.util.converter.NumberStringConverter
 import tornadofx.*
@@ -30,9 +32,14 @@ import java.text.NumberFormat
 import java.util.concurrent.Callable
 import kotlin.math.PI
 
-// A number with many factors and is large enough
+/**
+ * A number with many factors and is large enough.
+ */
 const val POSITION_FRAGMENT_HEIGHT = 720.0
 
+/**
+ * The [Scope] for [PositionFragment].
+ */
 class PositionScope(
     val nodes: ObjectProperty<MutableList<Node>>,
     val bounds: Rectangle,
@@ -42,14 +49,30 @@ class PositionScope(
     val positionData: PositionData
 ) : Scope()
 
+/**
+ * A coordinate property by (x, y, visibility flag).
+ */
 private typealias CoordinateProperty = Triple<DoubleProperty, DoubleProperty, BooleanProperty>
 
+/**
+ * A [Fragment] for editing [Positions].
+ */
 class PositionFragment : Fragment() {
     override val scope = super.scope as PositionScope
 
-    private fun coordinateProperty(): CoordinateProperty =
-        Triple(SimpleDoubleProperty(), SimpleDoubleProperty(), SimpleBooleanProperty(true))
+    /**
+     * Create a new [CoordinateProperty].
+     *
+     * @return A [CoordinateProperty] with default values (0.0, 0.0, true).
+     */
+    private fun coordinateProperty() =
+        CoordinateProperty(SimpleDoubleProperty(), SimpleDoubleProperty(), SimpleBooleanProperty(true))
 
+    /**
+     * Set the position values of a [CoordinateProperty] to that of a [Coordinate].
+     *
+     * @param coordinate The coordinates to set with.
+     */
     private fun CoordinateProperty.setCoordinates(coordinate: Coordinate) {
         first.value = coordinate.first
         second.value = coordinate.second
@@ -82,18 +105,30 @@ class PositionFragment : Fragment() {
     private val railroadPositionProperty = coordinateProperty()
     // The game NEVER mentions aeroplane_factory positioning... It should be a property but it'll stay unused for now
 
+    /**
+     * A [ChangeListener] for [PositionScope.nodes]. Sets the values of [stack]'s children to the new value.
+     */
     private val nodesListener: ChangeListener<MutableList<Node>> = ChangeListener { _, _, newValue ->
         stack.children.setAll(newValue)
     }
 
+    /**
+     * A [NumberStringConverter] that does not group numbers with commas.
+     */
     private val numberStringConverter = NumberStringConverter(NumberFormat.getNumberInstance().apply {
         isGroupingUsed = false
     })
 
+    /**
+     * Remove the [nodesListener] on [PositionScope.nodes].
+     */
     override fun onUndock() {
         scope.nodes.removeListener(nodesListener)
     }
 
+    /**
+     * Bind the properties of [PositionFragment], attach [nodesListener], and set the [title].
+     */
     override fun onDock() {
         scope.positionData.forEach(::visitPositionInfo)
 
@@ -101,6 +136,11 @@ class PositionFragment : Fragment() {
         title = "${scope.provinceId} - ${scope.provinceName}"
     }
 
+    /**
+     * Match on a [PositionInfo] to set the [PositionFragment] properties.
+     *
+     * @param info The property to match on.
+     */
     private fun visitPositionInfo(info: PositionInfo) = when (info) {
         is ObjectCoordinate -> visitObjectCoordinate(info)
         is BuildingNudgeBlock -> {
@@ -130,6 +170,14 @@ class PositionFragment : Fragment() {
         is TextScale -> textScaleProperty.set(info.scale)
     }
 
+    /**
+     * Provide a function for a [BuildingTransform].
+     *
+     * @param fort The fort property.
+     * @param naval The naval base property.
+     * @param rail The railroad property.
+     * @param aero The aeroplane property.
+     */
     private fun buildingTypeTransform(
         fort: DoubleProperty,
         naval: DoubleProperty,
@@ -144,6 +192,11 @@ class PositionFragment : Fragment() {
         }.value = bt.second
     }
 
+    /**
+     * Match on an [ObjectCoordinate] to set the [PositionFragment] properties.
+     *
+     * @param oc The property to match on.
+     */
     private fun visitObjectCoordinate(oc: ObjectCoordinate) = when (oc.type) {
         ObjectType.UNIT -> unitCoordinateProperty
         ObjectType.TEXT -> textPositionProperty
@@ -154,18 +207,32 @@ class PositionFragment : Fragment() {
         ObjectType.TOWN -> townCoordinateProperty
     }.setCoordinates(oc.coordinate)
 
+    /**
+     * Match on an [BuildingPositionData] to set the [PositionFragment] properties.
+     *
+     * @param bpd The property to match on.
+     */
     private fun visitBuildingPositionData(bpd: BuildingPositionData) = when (bpd.positionType) {
         PositionType.FORT -> fortPositionProperty
         PositionType.NAVAL_BASE -> navalBasePositionProperty
         PositionType.RAILROAD -> railroadPositionProperty
     }.setCoordinates(bpd.coordinate)
 
+    /**
+     * A change formatter for numbers. Disallows non-digits and negative numbers.
+     */
     private val numberFilter: (TextFormatter.Change) -> Boolean = { change ->
         !change.isAdded || change.controlNewText.let {
             it.isDouble() && it.toDouble() >= 0
         }
     }
 
+    /**
+     * Provide an [EventHandler] for key presses for the textfield provided.
+     *
+     * @param textField The text field to modify the text of on key press.
+     * @return An [EventHandler] for the [textField].
+     */
     private fun buildKeyPressEvent(textField: TextField) =
         EventHandler { it: KeyEvent ->
             val initial = numberStringConverter.fromString(textField.text)?.toDouble() ?: return@EventHandler
@@ -176,8 +243,14 @@ class PositionFragment : Fragment() {
             }
         }
 
-    private fun Fieldset.coordinates(text: String, coordinateProperty: CoordinateProperty) {
-        field("$text:") {
+    /**
+     * Attach a series of fields for editing [CoordinateProperty]'s.
+     *
+     * @param name The [Field] name.
+     * @param coordinateProperty The property to make fields for.
+     */
+    private fun Fieldset.coordinates(name: String, coordinateProperty: CoordinateProperty) {
+        field("$name:") {
             textfield(coordinateProperty.first, numberStringConverter) {
                 prefWidth = 100.0
                 filterInput(numberFilter)
@@ -196,9 +269,15 @@ class PositionFragment : Fragment() {
         }
     }
 
-    private fun Fieldset.transform(text: String, doubleProperty: DoubleProperty) {
-        field("$text:") {
-            textfield(doubleProperty, numberStringConverter) {
+    /**
+     * Attach a field for transforming [DoubleProperty]'s.
+     *
+     * @param name The [Field] name.
+     * @param transform The property to make a field for.
+     */
+    private fun Fieldset.transform(name: String, transform: DoubleProperty) {
+        field("$name:") {
+            textfield(transform, numberStringConverter) {
                 filterInput(numberFilter)
 
                 onKeyPressed = buildKeyPressEvent(this)
@@ -206,6 +285,61 @@ class PositionFragment : Fragment() {
         }
     }
 
+    /**
+     * Create a [DoubleBinding] defined by the transform of the value in [this] by [op].
+     *
+     * @param op The transformation function.
+     * @return A [DoubleBinding] from the application of [op] onto [this].
+     */
+    private fun DoubleProperty.map(op: (Double) -> Double): DoubleBinding = Bindings.createDoubleBinding(Callable {
+        op(this.get())
+    }, this)
+
+    /**
+     * Attach a field for modifying [DoubleProperty]'s that define rotation in radians.
+     *
+     * @param name The [Field] name.
+     * @param rotation The property to make a rotation field for.
+     */
+    private fun Fieldset.rotation(name: String, rotation: DoubleProperty) {
+        field("$name:") {
+            val c = circle(radius = 112.5) {
+                fill = Color.WHITE
+                stroke = Color.BLACK
+                strokeWidth = 1.0
+            }
+
+            line {
+                isManaged = false
+                stroke = Color.CRIMSON
+
+                startXProperty().bind(c.layoutXProperty())
+                startYProperty().bind(c.layoutYProperty())
+
+                val ex = startXProperty() + (c.radiusProperty() * rotation.map(Math::cos))
+                val ey = startYProperty() - (c.radiusProperty() * rotation.map(Math::sin))
+                endXProperty().bind(ex)
+                endYProperty().bind(ey)
+
+                val rotateEvent = EventHandler<MouseEvent> {
+                    val rx = c.radius + it.x - startX
+                    val ry = c.radius + it.y - startY
+                    val rot = Math.atan2(ry, rx)
+                    rotation.value = -rot
+                }
+
+                c.onMouseDragged = rotateEvent
+                c.onMouseClicked = rotateEvent
+            }
+        }
+    }
+
+    /**
+     * Correct the origin of [this] to point to the top left of the canvas.
+     *
+     * @param cb The bottom of the canvas.
+     * @return The corrected bindings.
+     */
     private fun CoordinateProperty.subtractBounds(cb: ObservableNumberValue): Pair<DoubleBinding, DoubleBinding> {
         val x = (first - scope.bounds.x) * scope.ratio
         val y = ((second - scope.bounds.y) * -scope.ratio) + cb
@@ -213,6 +347,9 @@ class PositionFragment : Fragment() {
         return x to y
     }
 
+    /**
+     * A binding of the layoutWidth of a [Text.layoutBoundsProperty].
+     */
     private val Text.layoutWidthProperty: DoubleBinding
         get() {
             val lb = layoutBoundsProperty()
@@ -221,6 +358,14 @@ class PositionFragment : Fragment() {
             }, lb)
         }
 
+    /**
+     * Attach text for viewing a [CoordinateProperty].
+     *
+     * @param position The coordinates to work with.
+     * @param scale The scale of the text.
+     * @param rotation The rotation of the text.
+     * @param canvasBottom The bottom of the canvas.
+     */
     private fun Parent.text(
         position: CoordinateProperty,
         scale: DoubleProperty,
@@ -243,6 +388,14 @@ class PositionFragment : Fragment() {
         }
     }
 
+    /**
+     * Attach a point for editing a [CoordinateProperty] without text.
+     *
+     * @param position The coordinates to work with.
+     * @param propertyName The name of the property.
+     * @param icon The icon to display.
+     * @param canvasBottom The bottom of the canvas.
+     */
     private fun Parent.point(
         position: CoordinateProperty,
         propertyName: String,
@@ -269,6 +422,11 @@ class PositionFragment : Fragment() {
         }
     }
 
+    /**
+     * Bind all position properties of [PositionFragment] to a [StackPane].
+     *
+     * @param canvasBottom The bottom of the canvas.
+     */
     private fun StackPane.bindPositionProperties(canvasBottom: ObservableNumberValue) {
         point(unitCoordinateProperty, "Unit Position", FontAwesomeIcon.STREET_VIEW, canvasBottom)
         point(buildingConstructionCoordinateProperty, "Building Construction", FontAwesomeIcon.WRENCH, canvasBottom)
@@ -284,6 +442,9 @@ class PositionFragment : Fragment() {
         text(textPositionProperty, textScaleProperty, textRotationProperty, canvasBottom)
     }
 
+    /**
+     * The [StackPane] containing the [PositionScope.nodes].
+     */
     private lateinit var stack: StackPane
 
     override val root = borderpane {
@@ -293,11 +454,11 @@ class PositionFragment : Fragment() {
 
                 form {
                     fieldset("Text", FontAwesomeIconView(FontAwesomeIcon.TEXT_WIDTH)) {
-                        field("Name") {
+                        field("Name:") {
                             textfield(textNameProperty)
                         }
                         coordinates("Position", textPositionProperty)
-                        transform("Rotation", textRotationProperty)
+                        rotation("Rotation", textRotationProperty)
                         transform("Scale", textScaleProperty)
                     }
 
@@ -317,9 +478,9 @@ class PositionFragment : Fragment() {
                     }
 
                     fieldset("Building Rotation", FontAwesomeIconView(FontAwesomeIcon.UNDO)) {
-                        transform("Fort", fortRotationProperty)
-                        transform("Naval Base", navalBaseRotationProperty)
-                        transform("Railroad", railroadRotationProperty)
+                        rotation("Fort", fortRotationProperty)
+                        rotation("Naval Base", navalBaseRotationProperty)
+                        rotation("Railroad", railroadRotationProperty)
                     }
                 }
             }

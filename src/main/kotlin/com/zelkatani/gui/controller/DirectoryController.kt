@@ -9,6 +9,9 @@ import com.zelkatani.model.Mod
 import tornadofx.Controller
 import tornadofx.find
 
+/**
+ * A controller for [DirectoryView].
+ */
 class DirectoryController : Controller() {
     private val directoryView: DirectoryView by inject()
 
@@ -30,6 +33,7 @@ class DirectoryController : Controller() {
      * Commit changes to what was entered.
      * This parses the inputted files,
      * Validation of directories is done here.
+     * An instance of [EditorView] is loaded in if successful.
      */
     fun commitGameLocation() {
         // TODO: handle errors

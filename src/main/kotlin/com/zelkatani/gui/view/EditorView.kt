@@ -1,10 +1,10 @@
 package com.zelkatani.gui.view
 
 import com.zelkatani.gui.APPLICATION_NAME
-import com.zelkatani.gui.fragment.OpacityFragment
-import com.zelkatani.gui.fragment.OpacityScope
-import com.zelkatani.gui.fragment.PositionFragment
-import com.zelkatani.gui.pane.MapPane
+import com.zelkatani.gui.component.MapPane
+import com.zelkatani.gui.component.fragment.OpacityFragment
+import com.zelkatani.gui.component.fragment.OpacityScope
+import com.zelkatani.gui.component.fragment.PositionFragment
 import com.zelkatani.model.Mod
 import javafx.beans.property.ObjectProperty
 import javafx.beans.property.SimpleObjectProperty
@@ -14,7 +14,7 @@ import javafx.stage.StageStyle
 import tornadofx.*
 
 /**
- * The scope for [EditorView], contains the mod to construct visuals for.
+ * The [Scope] for [EditorView], contains the mod to construct visuals for.
  */
 class EditorScope(val mod: Mod) : Scope()
 
@@ -23,14 +23,22 @@ class EditorScope(val mod: Mod) : Scope()
  */
 class EditorView : View(APPLICATION_NAME) {
     override val scope = super.scope as EditorScope
+
+    /**
+     * The [Mod] for the editor to work with.
+     */
     private val mod = scope.mod
 
+    /**
+     * The current [PositionFragment] bound by this [EditorView].
+     */
     private val positionFragmentProperty: ObjectProperty<PositionFragment?> = SimpleObjectProperty()
-    // its bad design to modify observed values, but I don't know any other way to do this.
+
+    /**
+     * A [ChangeListener] for [positionFragmentProperty]. Closes the previous [PositionFragment]
+     * if exists and is docked, otherwise creates a new [PositionFragment].
+     */
     private val positionFragmentListener: ChangeListener<PositionFragment?> = ChangeListener { _, oldValue, newValue ->
-        // TODO: find a way to prohibit triggering it multiple times. Make it blocking?
-        // TODO: If blocking, allow for the opacity control to be used.
-        // TODO: Ideally, commit changes. Close for now
         if (oldValue?.isDocked == true) {
             oldValue.close()
         }
@@ -43,8 +51,15 @@ class EditorView : View(APPLICATION_NAME) {
         )
     }
 
+    /**
+     * The [MapPane] component for this [EditorView].
+     */
     private val mapPane = MapPane(mod.worldMap, mod.localization, positionFragmentProperty)
 
+    /**
+     * Set the stage size and create an [OpacityFragment].
+     * Attach [positionFragmentListener] to [positionFragmentProperty].
+     */
     override fun onDock() {
         currentStage?.apply {
             isResizable = true
@@ -78,6 +93,9 @@ class EditorView : View(APPLICATION_NAME) {
         )
     }
 
+    /**
+     * Remove the [positionFragmentListener] on [positionFragmentProperty].
+     */
     override fun onUndock() {
         positionFragmentProperty.removeListener(positionFragmentListener)
     }
