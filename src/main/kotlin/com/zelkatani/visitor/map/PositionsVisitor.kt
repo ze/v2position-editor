@@ -14,6 +14,9 @@ import com.zelkatani.visitor.line
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.TerminalNode
 
+/**
+ * A visitor for `positions.txt`.
+ */
 class PositionsVisitor : PositionsBaseVisitor<Any>() {
     private val positions = HashMap<Int, PositionData>(5000)
     private val multiException = MultiException()

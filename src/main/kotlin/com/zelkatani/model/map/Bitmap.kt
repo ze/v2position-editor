@@ -10,12 +10,12 @@ import java.io.File
 import javax.imageio.ImageIO
 
 /**
- * A coordinate point for (x, y) bound grids.
+ * A coordinate point for (x, y) bound integer grids.
  */
 typealias Point = Pair<Int, Int>
 
 /**
- * A Bitmap model for .bmp images
+ * A model for .bmp images.
  */
 class Bitmap(bitmapFile: File) : Iterable<Point> {
 
@@ -29,17 +29,46 @@ class Bitmap(bitmapFile: File) : Iterable<Point> {
         }
     }
 
+    /**
+     * The bitmap image.
+     */
     private val bitmap: BufferedImage = ImageIO.read(bitmapFile)
+
+    /**
+     * The image to use to work with tornadofx.
+     */
     val image: WritableImage = SwingFXUtils.toFXImage(bitmap, null)
 
+    /**
+     * The bitmap bytes to access.
+     */
     private val bitmapData = (bitmap.raster.dataBuffer as DataBufferByte).data
 
-    val width = bitmap.width
-    val height = bitmap.height
+    /**
+     * The bitmap width in pixels.
+     */
+    private val width = bitmap.width
 
-    private val colorMap = HashMap<Int, Color>(500)
+    /**
+     * The bitmap height in pixels.
+     */
+    private val height = bitmap.height
 
+    /**
+     * The map of integers to colors so that colors are not continuously being constructed.
+     */
+    private val colorMap = HashMap<Int, Color>(1000)
+
+    /**
+     * Get a [Color] from an (x, y) point.
+     */
     operator fun get(point: Point) = get(point.first, point.second)
+
+    /**
+     * Get a color from the specified [row] and [col].
+     *
+     * @throws IllegalArgumentException when row or col are out of bounds.
+     */
     operator fun get(row: Int, col: Int): Color {
         require(row in 0 until height) {
             "Row $row is out of bounds. Bitmap height is: $height"

@@ -10,8 +10,7 @@ import org.antlr.v4.runtime.CommonTokenStream
 import java.io.File
 
 /**
- * Continents model that contains the information of all defined continents.
- * (This may be better as an object)
+ * A model for `continent.txt`.
  */
 data class Continent(val definitions: Map<String, ContinentInfo>) {
     companion object : ModelBuilder<Continent> {
@@ -26,6 +25,9 @@ data class Continent(val definitions: Map<String, ContinentInfo>) {
         }
     }
 
+    /**
+     * Get a [continent] from [definitions].
+     */
     operator fun get(continent: String) = definitions[continent]
 }
 

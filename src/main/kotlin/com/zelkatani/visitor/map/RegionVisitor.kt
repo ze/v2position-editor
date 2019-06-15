@@ -11,7 +11,7 @@ import com.zelkatani.visitor.line
 import org.antlr.v4.runtime.tree.TerminalNode
 
 /**
- * Visitor for region.txt parser.
+ * A visitor for `region.txt`.
  */
 class RegionVisitor : RegionBaseVisitor<Any>() {
     private val regions = hashMapOf<String, ProvinceList>()

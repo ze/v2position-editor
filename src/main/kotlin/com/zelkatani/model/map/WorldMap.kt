@@ -5,7 +5,7 @@ import com.zelkatani.model.ModelBuilder
 import java.io.File
 
 /**
- * A model for the "map/" folder. Everything is relative to the folder.
+ * A model for the `map/` folder. Everything is relative to the folder.
  */
 data class WorldMap(
     val default: Default,

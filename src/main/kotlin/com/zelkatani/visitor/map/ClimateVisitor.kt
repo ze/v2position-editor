@@ -15,6 +15,9 @@ import com.zelkatani.visitor.line
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.TerminalNode
 
+/**
+ * A visitor for `climate.txt`.
+ */
 class ClimateVisitor : ClimateBaseVisitor<Any>() {
     private val modifiers = HashMap<String, Modifiers>()
     private val provinces = HashMap<String, List<Int>>()

@@ -16,7 +16,7 @@ import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.TerminalNode
 
 /**
- * Visitor for continents.txt parser.
+ * A visitor for `continents.txt`.
  */
 class ContinentVisitor : ContinentBaseVisitor<Any>() {
     private val multiException = MultiException()

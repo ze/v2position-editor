@@ -9,7 +9,7 @@ import org.antlr.v4.runtime.CommonTokenStream
 import java.io.File
 
 /**
- * Regions model that holds all region [definitions] for region.txt.
+ * A model for `region.txt`. Stores all region [definitions] as a map.
  */
 data class Region(val definitions: Map<String, ProvinceList>) {
     companion object : ModelBuilder<Region> {
@@ -25,4 +25,7 @@ data class Region(val definitions: Map<String, ProvinceList>) {
     }
 }
 
+/**
+ * A list of provinces.
+ */
 typealias ProvinceList = List<Int>

@@ -9,7 +9,7 @@ import org.antlr.v4.runtime.CommonTokenStream
 import java.io.File
 
 /**
- * The "default.map" file model.
+ * A model for `default.map`.
  */
 data class Default(
     val maxProvinces: Int,

@@ -33,5 +33,8 @@ fun ParserRuleContext.getNumber(intToken: Int, floatToken: Int): Double {
     return (float ?: int).asDouble()
 }
 
+/**
+ * Get the line from context.
+ */
 val ParserRuleContext.line
     get() = start.line

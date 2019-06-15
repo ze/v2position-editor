@@ -17,6 +17,9 @@ import javafx.scene.paint.Color
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.TerminalNode
 
+/**
+ * A visitor for `terrain.txt`.
+ */
 class TerrainVisitor : TerrainBaseVisitor<Any>() {
     private val definitions = hashMapOf<String, TerrainInfo>()
     private val terrainTGAMapping = hashMapOf<String, TerrainType>()

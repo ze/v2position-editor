@@ -5,7 +5,7 @@ import javafx.scene.paint.Color
 import java.io.File
 
 /**
- * Definition model that holds all records from definition.csv
+ * A model for `definition.csv`.
  */
 data class Definition(
     val provinces: Map<Int, DefinitionParser.ProvinceDefinitionRecord>,

@@ -5,6 +5,9 @@ import org.apache.commons.csv.CSVParser
 import java.io.File
 import java.io.FileFilter
 
+/**
+ * A model for every file in `localisation/`.
+ */
 data class Localization(val records: Map<String, LocalizationRecord>) {
     companion object : ModelBuilder<Localization> {
         /**
@@ -32,10 +35,12 @@ data class Localization(val records: Map<String, LocalizationRecord>) {
         }
     }
 
+    /**
+     * Get a localization record with [key] for [language].
+     */
     operator fun get(key: String, language: LocalizationLanguage) =
         records[key]?.getEntryForLanguage(language)
 }
-
 
 /**
  * Object class to parse many localization files, held in the game's `localisation` folder.
@@ -52,6 +57,9 @@ object LocalizationParser {
     val records: Map<String, LocalizationRecord>
         get() = mutableRecords
 
+    /**
+     * The csv format with ; as a delimiter.
+     */
     private val format = CSVFormat.newFormat(';')
 
     /**

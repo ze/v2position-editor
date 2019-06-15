@@ -4,7 +4,7 @@ import com.zelkatani.model.ModelBuilder
 import java.io.File
 
 /**
- * Adjacencies model that holds all records from adjacencies.csv
+ * A model for `adjacencies.csv`.
  */
 data class Adjacencies(val types: Map<Point, AdjacenciesParser.AdjacencyRecord>) {
     companion object : ModelBuilder<Adjacencies> {

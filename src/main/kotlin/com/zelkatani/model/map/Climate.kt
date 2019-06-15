@@ -9,6 +9,9 @@ import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import java.io.File
 
+/**
+ * A model for `climate.txt`. Currently unused.
+ */
 data class Climate(val climateModifiers: Map<String, Modifiers>, val climateProvinces: Map<String, List<Int>>) {
     companion object : ModelBuilder<Climate> {
         override fun from(file: File): Climate {

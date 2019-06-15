@@ -10,6 +10,9 @@ import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import java.io.File
 
+/**
+ * A model for `terrain.txt`.
+ */
 data class Terrain(
     val number: Int,
     val definitions: Map<String, TerrainInfo>,
@@ -28,5 +31,12 @@ data class Terrain(
     }
 }
 
+/**
+ * Terrain information by color.
+ */
 data class TerrainInfo(val color: Color, val modifiers: Modifiers)
+
+/**
+ * Terrain types.
+ */
 data class TerrainType(val type: String, val colorTGAIndex: List<Int>, val modifiers: Modifiers)

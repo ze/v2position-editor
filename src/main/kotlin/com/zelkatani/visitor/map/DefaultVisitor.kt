@@ -15,7 +15,7 @@ import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.TerminalNode
 
 /**
- * A visitor for "default.map".
+ * A visitor for `default.map`.
  */
 class DefaultVisitor : DefaultBaseVisitor<Any>() {
 

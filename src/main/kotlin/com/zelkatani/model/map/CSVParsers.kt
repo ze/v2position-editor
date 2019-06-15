@@ -1,6 +1,7 @@
 package com.zelkatani.model.map
 
 import com.zelkatani.MultiException
+import com.zelkatani.model.map.AdjacenciesParser.AdjacencyType.ERROR
 import com.zelkatani.model.removeComments
 import com.zelkatani.requireNoExceptions
 import javafx.scene.paint.Color
@@ -91,6 +92,9 @@ class AdjacenciesParser(file: File) : MapCSVParser(file) {
         requireNoExceptions(multiException)
     }
 
+    /**
+     * A record defining a line in `adjacencies.csv`.
+     */
     data class AdjacencyRecord(val type: AdjacencyType, val through: Int, val data: Int, val comment: String) {
         init {
             require(through >= 0) {
@@ -99,6 +103,9 @@ class AdjacenciesParser(file: File) : MapCSVParser(file) {
         }
     }
 
+    /**
+     * All types of adjacencies. [ERROR] if malformed.
+     */
     enum class AdjacencyType {
         SEA,
         LAND,
@@ -118,18 +125,24 @@ class DefinitionParser(file: File) : MapCSVParser(file) {
      */
     private val mapCapacity = 5000
 
+    /**
+     * The private mutable map for [provinces]
+     */
     private val _provinces = HashMap<Int, ProvinceDefinitionRecord>(mapCapacity)
 
     /**
-     * All province definition.
+     * All province definitions.
      */
     val provinces: Map<Int, ProvinceDefinitionRecord>
         get() = _provinces
 
+    /**
+     * The private mutable map for [colors]
+     */
     private val _colors = HashMap<Color, ColorDefinitionRecord>(mapCapacity)
 
     /**
-     * All color definition.
+     * All color definitions.
      */
     val colors: Map<Color, ColorDefinitionRecord>
         get() = _colors

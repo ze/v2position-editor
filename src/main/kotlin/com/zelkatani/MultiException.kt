@@ -5,15 +5,27 @@ package com.zelkatani
  * rather than the first thrown exception.
  */
 class MultiException : Exception(), Iterable<LineException> {
+    /**
+     * All exceptions stored so far.
+     */
     private val exceptions = mutableListOf<LineException>()
 
+    /**
+     * The quantity of exceptions retained.
+     */
     val size
         get() = exceptions.size
 
-    fun add(string: String, line: Int) {
-        exceptions += LineException(string, line)
+    /**
+     * Add an exception with [message] on [line].
+     */
+    fun add(message: String, line: Int) {
+        exceptions += LineException(message, line)
     }
 
+    /**
+     * Create a new exception with message to line.
+     */
     operator fun plusAssign(exception: Pair<String, Int>) {
         exceptions += LineException(exception.first, exception.second)
     }
