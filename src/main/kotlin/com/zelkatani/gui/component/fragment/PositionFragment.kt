@@ -555,7 +555,7 @@ class PositionFragment : Fragment() {
             railroadNudgeProperty,
             aeroplaneFactoryNudgeProperty
         )
-        if (rotationData.isNotEmpty()) {
+        if (nudgeData.isNotEmpty()) {
             this += BuildingNudges(nudgeData)
         }
     }
