@@ -238,16 +238,12 @@ class MapPane(
         colorRecord ?: throw RuntimeException("Color should have an associated province id, but does not have one.")
 
         val provinceId = colorRecord.province
-        val positionData = worldMap.positions[provinceId]
 
         val provinceString = "PROV$provinceId"
         val provinceName = localization[provinceString, LocalizationLanguage.ENGLISH] ?: provinceString
 
-        // TODO: is this actually required or is there just some default defined if none?
-        positionData ?: throw RuntimeException("Province has no position data defined.")
-
         val positionScope =
-            PositionScope(positionFragmentChildren, bounds, ratio, provinceId, provinceName, positionData)
+            PositionScope(positionFragmentChildren, bounds, ratio, provinceId, provinceName, worldMap.positions)
         return find(positionScope)
     }
 }

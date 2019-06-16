@@ -1,6 +1,6 @@
 package com.zelkatani.gui.component.fragment
 
-import com.zelkatani.gui.EditorStylesheet
+import com.zelkatani.gui.app.EditorStylesheet
 import com.zelkatani.gui.faiconview
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
 import javafx.beans.property.DoubleProperty
@@ -15,6 +15,7 @@ import javafx.scene.Node
 import javafx.scene.control.ComboBox
 import javafx.scene.control.TextFormatter
 import javafx.scene.effect.BlendMode
+import javafx.scene.input.KeyCode
 import javafx.scene.input.MouseEvent
 import javafx.util.converter.NumberStringConverter
 import tornadofx.*
@@ -110,11 +111,24 @@ class OpacityFragment : Fragment("Layer Opacity") {
             bind(opacity)
         }
 
-        textfield(opacity, NumberStringConverter()) {
+        val converter = NumberStringConverter()
+        textfield(opacity, converter) {
             // have to set the text here to 255 otherwise it ignores opacity's default value...
             text = "255"
             prefWidth = 45.0
             filterInput(sliderFilter)
+
+            setOnKeyPressed {
+                if (it.code == KeyCode.UP || it.code == KeyCode.DOWN) {
+                    val initial = converter.fromString(text)?.toInt() ?: return@setOnKeyPressed
+
+                    if (it.code == KeyCode.UP && initial != 255) {
+                        text = (initial + 1).toString()
+                    } else if (it.code == KeyCode.DOWN && initial != 0) {
+                        text = (initial - 1).toString()
+                    }
+                }
+            }
         }
     }
 

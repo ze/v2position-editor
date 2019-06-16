@@ -1,6 +1,6 @@
 package com.zelkatani.gui.controller
 
-import com.zelkatani.gui.PREFERENCES_NAME
+import com.zelkatani.gui.app.PREFERENCES_NAME
 import com.zelkatani.gui.view.DirectoryView
 import com.zelkatani.gui.view.EditorScope
 import com.zelkatani.gui.view.EditorView

@@ -1,7 +1,7 @@
 package com.zelkatani.gui.view
 
-import com.zelkatani.gui.APPLICATION_NAME
-import com.zelkatani.gui.PREFERENCES_NAME
+import com.zelkatani.gui.app.APPLICATION_NAME
+import com.zelkatani.gui.app.PREFERENCES_NAME
 import com.zelkatani.gui.controller.DirectoryController
 import com.zelkatani.model.GameLocation
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon

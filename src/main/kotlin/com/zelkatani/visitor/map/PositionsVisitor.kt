@@ -18,7 +18,7 @@ import org.antlr.v4.runtime.tree.TerminalNode
  * A visitor for `positions.txt`.
  */
 class PositionsVisitor : PositionsBaseVisitor<Any>() {
-    private val positions = HashMap<Int, PositionData>(5000)
+    private val positions = LinkedHashMap<Int, PositionData>(5000)
     private val multiException = MultiException()
 
     override fun visitPositions(ctx: PositionsParser.PositionsContext): Positions {
@@ -49,7 +49,7 @@ class PositionsVisitor : PositionsBaseVisitor<Any>() {
         ObjectCoordinate(ObjectType.TEXT, visitCoordinate(ctx.coordinate()))
 
     override fun visitBuildingPositionBlock(ctx: PositionsParser.BuildingPositionBlockContext) =
-        BuildingPosition(ctx.objectPositionBlock().map(::visitObjectPositionBlock))
+        BuildingPositions(ctx.objectPositionBlock().map(::visitObjectPositionBlock))
 
     override fun visitObjectPositionBlock(ctx: PositionsParser.ObjectPositionBlockContext) =
         visit(ctx.getChild(0)) as BuildingPositionData
@@ -76,7 +76,7 @@ class PositionsVisitor : PositionsBaseVisitor<Any>() {
         ObjectCoordinate(ObjectType.BUILDING_CONSTRUCTION, visitCoordinate(ctx.coordinate()))
 
     override fun visitBuildingNudgeBlock(ctx: PositionsParser.BuildingNudgeBlockContext) =
-        BuildingNudgeBlock(ctx.objectValueExpr().map(::visitObjectValueExpr))
+        BuildingNudges(ctx.objectValueExpr().map(::visitObjectValueExpr))
 
     override fun visitMilitaryConstructionBlock(ctx: PositionsParser.MilitaryConstructionBlockContext) =
         ObjectCoordinate(ObjectType.MILITARY_CONSTRUCTION, visitCoordinate(ctx.coordinate()))
@@ -95,7 +95,7 @@ class PositionsVisitor : PositionsBaseVisitor<Any>() {
 
 
     override fun visitBuildingRotationBlock(ctx: PositionsParser.BuildingRotationBlockContext) =
-        BuildingRotation(ctx.objectValueExpr().map(::visitObjectValueExpr))
+        BuildingRotations(ctx.objectValueExpr().map(::visitObjectValueExpr))
 
     @Suppress("UNCHECKED_CAST")
     override fun visitObjectValueExpr(ctx: PositionsParser.ObjectValueExprContext) =

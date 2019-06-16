@@ -1,4 +1,4 @@
-package com.zelkatani.gui
+package com.zelkatani.gui.app
 
 import com.zelkatani.gui.controller.DirectoryController
 import com.zelkatani.gui.view.DirectoryView

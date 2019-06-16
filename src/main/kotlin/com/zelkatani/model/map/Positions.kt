@@ -16,11 +16,41 @@ import java.io.File
 typealias Coordinate = Pair<Double, Double>
 
 /**
+ * The quantity of spaces for each level of indentation.
+ */
+private const val OFFSET_STEP = 2
+
+/**
+ * Repeat the string containing just a space n times.
+ */
+private fun n(offset: Int) = " ".repeat(offset)
+
+/**
+ * Convert a [Coordinate] to a string for `positions.txt`.
+ * This assumes the starting '{' is next to an '=' with one spacing between them.
+ *
+ * @see PositionInfo.toPositionString
+ */
+private fun Coordinate.toPositionString(offset: Int) = buildString {
+    val inner = n(offset + OFFSET_STEP)
+    val outer = n(offset)
+
+    appendln('{')
+    append(inner).append("x = ").appendln(first)
+    append(inner).append("y = ").appendln(second)
+    append(outer).append('}')
+}
+
+/**
  * A model for `positions.txt`.
  */
-data class Positions(val positions: Map<Int, PositionData>) {
+data class Positions(val positions: MutableMap<Int, PositionData>) {
     companion object : ModelBuilder<Positions> {
+        private lateinit var file: File
+
         override fun from(file: File): Positions {
+            this.file = file
+
             val positionsLexer = PositionsLexer(CharStreams.fromReader(file.reader()))
             val positionsParser = PositionsParser(CommonTokenStream(positionsLexer))
 
@@ -29,12 +59,40 @@ data class Positions(val positions: Map<Int, PositionData>) {
 
             return positionsVisitor.visitPositions(positionsContext)
         }
+
+        /**
+         * Export a [Positions] to the [file] that was read from.
+         *
+         * @param positions The positions data to export.
+         */
+        fun toFile(positions: Positions) {
+            file.writeText(positions.toString())
+        }
     }
 
     /**
      * Get a [PositionData] from a [provinceId].
      */
     operator fun get(provinceId: Int) = positions[provinceId]
+
+    /**
+     * Set [positionData] to [provinceId].
+     */
+    operator fun set(provinceId: Int, positionData: PositionData) {
+        positions[provinceId] = positionData
+    }
+
+    override fun toString() = buildString {
+        positions.forEach { (prov, data) ->
+            if (data.isNotEmpty()) {
+                append(prov).appendln(" = {")
+                data.forEach {
+                    appendln(it.toPositionString(OFFSET_STEP))
+                }
+                appendln('}')
+            }
+        }
+    }
 }
 
 /**
@@ -45,7 +103,15 @@ typealias PositionData = List<PositionInfo>
 /**
  * All varying types of position information.
  */
-sealed class PositionInfo
+sealed class PositionInfo {
+    /**
+     * Construct a string for `positions.txt`. The [String] should not end with a newline.
+     *
+     * @param offset The amount of indentation before every new line
+     * @return A string that can be written to `positions.txt`.
+     */
+    abstract fun toPositionString(offset: Int): String
+}
 
 /**
  * A [coordinate] for various [ObjectType]'s.
@@ -53,6 +119,21 @@ sealed class PositionInfo
 data class ObjectCoordinate(val type: ObjectType, val coordinate: Coordinate) : PositionInfo() {
     enum class ObjectType {
         UNIT, TEXT, BUILDING_CONSTRUCTION, MILITARY_CONSTRUCTION, FACTORY, CITY, TOWN
+    }
+
+    override fun toPositionString(offset: Int) = buildString {
+        append(n(offset)).append(
+            when (type) {
+                ObjectType.UNIT -> "unit"
+                ObjectType.TEXT -> "text_position"
+                ObjectType.BUILDING_CONSTRUCTION -> "building_construction"
+                ObjectType.MILITARY_CONSTRUCTION -> "military_construction"
+                ObjectType.FACTORY -> "factory"
+                ObjectType.CITY -> "city"
+                ObjectType.TOWN -> "town"
+            }
+        ).append(" = ")
+        append(coordinate.toPositionString(offset))
     }
 }
 
@@ -62,14 +143,45 @@ data class ObjectCoordinate(val type: ObjectType, val coordinate: Coordinate) : 
 typealias BuildingTransform = Pair<BuildingType, Double>
 
 /**
- * Building nudge data.
+ * @see PositionInfo.toPositionString
  */
-data class BuildingNudgeBlock(val transforms: List<BuildingTransform>) : PositionInfo()
+private fun List<BuildingTransform>.toPositionString(offset: Int) = buildString {
+    this@toPositionString.forEach {
+        append(n(offset)).append(
+            when (it.first) {
+                BuildingType.FORT -> "fort"
+                BuildingType.NAVAL_BASE -> "naval_base"
+                BuildingType.RAILROAD -> "railroad"
+                BuildingType.AEROPLANE_FACTORY -> "aeroplane_factory"
+            }
+        ).append(" = ")
+        append(it.second)
+    }
+}
 
 /**
- * Buulding rotation data.
+ * Building nudge data.
  */
-data class BuildingRotation(val transforms: List<BuildingTransform>) : PositionInfo()
+data class BuildingNudges(val transforms: List<BuildingTransform>) : PositionInfo() {
+    override fun toPositionString(offset: Int) = buildString {
+        val outer = n(offset)
+        append(outer).appendln("building_nudge = {")
+        appendln(transforms.toPositionString(offset + OFFSET_STEP))
+        append(outer).append('}')
+    }
+}
+
+/**
+ * Building rotation data.
+ */
+data class BuildingRotations(val transforms: List<BuildingTransform>) : PositionInfo() {
+    override fun toPositionString(offset: Int) = buildString {
+        val outer = n(offset)
+        append(outer).appendln("building_rotation = {")
+        appendln(transforms.toPositionString(offset + OFFSET_STEP))
+        append(outer).append('}')
+    }
+}
 
 /**
  * Buildings that can be acted upon by a rotation or nudge.
@@ -81,27 +193,71 @@ enum class BuildingType {
 /**
  * Railroad visibility data.
  */
-data class RailroadVisibility(val visibilities: List<Int>) : PositionInfo()
+data class RailroadVisibility(val visibilities: List<Int>) : PositionInfo() {
+    override fun toPositionString(offset: Int) = buildString {
+        append(n(offset))
+            .append("railroad_visibility = { ")
+            .append(visibilities.joinToString(" "))
+            .append(" }")
+    }
+}
 
 /**
- * Building positions data. A collection of [positions].
+ * Building positions data. A collection of [BuildingPositionData].
  */
-data class BuildingPosition(val positions: List<BuildingPositionData>) : PositionInfo()
+data class BuildingPositions(val positions: List<BuildingPositionData>) : PositionInfo() {
+    override fun toPositionString(offset: Int) = buildString {
+        val outer = n(offset)
+        val inner = n(offset + OFFSET_STEP)
+
+        append(outer).appendln("building_position = {")
+        positions.forEach {
+            append(inner).append(
+                when (it.positionType) {
+                    PositionType.FORT -> "fort"
+                    PositionType.NAVAL_BASE -> "naval_base"
+                    PositionType.RAILROAD -> "railroad"
+                }
+            ).append(" = ")
+            appendln(it.coordinate.toPositionString(offset + OFFSET_STEP))
+        }
+        append(outer).append('}')
+    }
+}
 
 /**
  * Coordinate data for railway track spawns.
  */
-data class SpawnRailwayTrack(val coordinates: List<Coordinate>) : PositionInfo()
+data class SpawnRailwayTrack(val coordinates: List<Coordinate>) : PositionInfo() {
+    override fun toPositionString(offset: Int) = buildString {
+        val outer = n(offset)
+        val inner = n(offset + OFFSET_STEP)
+
+        append(outer).appendln("spawn_railway_track = {")
+        coordinates.forEach {
+            append(inner).appendln(it.toPositionString(offset + OFFSET_STEP))
+        }
+        append(outer).append('}')
+    }
+}
 
 /**
  * Text rotation data.
  */
-data class TextRotation(val rotation: Double) : PositionInfo()
+data class TextRotation(val rotation: Double) : PositionInfo() {
+    override fun toPositionString(offset: Int) = buildString {
+        append(n(offset)).append("text_rotation = ").append(rotation)
+    }
+}
 
 /**
  * Text scale data.
  */
-data class TextScale(val scale: Double) : PositionInfo()
+data class TextScale(val scale: Double) : PositionInfo() {
+    override fun toPositionString(offset: Int) = buildString {
+        append(n(offset)).append("text_scale = ").append(scale)
+    }
+}
 
 /**
  * Position data [coordinate] for various [PositionType]'s.

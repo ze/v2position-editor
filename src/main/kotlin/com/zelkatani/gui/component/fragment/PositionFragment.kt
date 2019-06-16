@@ -20,7 +20,6 @@ import javafx.scene.control.ScrollPane
 import javafx.scene.control.TextField
 import javafx.scene.control.TextFormatter
 import javafx.scene.input.KeyCode
-import javafx.scene.input.KeyEvent
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
@@ -46,8 +45,14 @@ class PositionScope(
     val ratio: Int,
     val provinceId: Int,
     val provinceName: String,
-    val positionData: PositionData
-) : Scope()
+    val positions: Positions
+) : Scope() {
+    /**
+     * The position data for the [provinceId].
+     */
+    val positionData = positions[provinceId]
+        ?: throw RuntimeException("No province defined with province id `$provinceId`.")
+}
 
 /**
  * A coordinate property by (x, y, visibility flag).
@@ -67,6 +72,18 @@ class PositionFragment : Fragment() {
      */
     private fun coordinateProperty() =
         CoordinateProperty(SimpleDoubleProperty(), SimpleDoubleProperty(), SimpleBooleanProperty(true))
+
+    /**
+     * The [Coordinate] contained by this property.
+     */
+    private val CoordinateProperty.coordinate: Coordinate
+        get() = first.value to second.value
+
+    /**
+     * The value defining true if the [Coordinate] modeled by this property is at the origin (0, 0), false otherwise.
+     */
+    private val CoordinateProperty.isZero: Boolean
+        get() = first.value == 0.0 && second.value == 0.0
 
     /**
      * Set the position values of a [CoordinateProperty] to that of a [Coordinate].
@@ -143,7 +160,7 @@ class PositionFragment : Fragment() {
      */
     private fun visitPositionInfo(info: PositionInfo) = when (info) {
         is ObjectCoordinate -> visitObjectCoordinate(info)
-        is BuildingNudgeBlock -> {
+        is BuildingNudges -> {
             info.transforms.forEach(
                 buildingTypeTransform(
                     fortNudgeProperty,
@@ -153,7 +170,7 @@ class PositionFragment : Fragment() {
                 )
             )
         }
-        is BuildingRotation -> {
+        is BuildingRotations -> {
             info.transforms.forEach(
                 buildingTypeTransform(
                     fortRotationProperty,
@@ -164,7 +181,7 @@ class PositionFragment : Fragment() {
             )
         }
         is RailroadVisibility -> Unit
-        is BuildingPosition -> info.positions.forEach(::visitBuildingPositionData)
+        is BuildingPositions -> info.positions.forEach(::visitBuildingPositionData)
         is SpawnRailwayTrack -> Unit
         is TextRotation -> textRotationProperty.set(info.rotation)
         is TextScale -> textScaleProperty.set(info.scale)
@@ -229,19 +246,19 @@ class PositionFragment : Fragment() {
 
     /**
      * Provide an [EventHandler] for key presses for the textfield provided.
-     *
-     * @param textField The text field to modify the text of on key press.
-     * @return An [EventHandler] for the [textField].
      */
-    private fun buildKeyPressEvent(textField: TextField) =
-        EventHandler { it: KeyEvent ->
-            val initial = numberStringConverter.fromString(textField.text)?.toDouble() ?: return@EventHandler
-            if (it.code == KeyCode.UP) {
-                textField.text = (initial + 1).toString()
-            } else if (it.code == KeyCode.DOWN) {
-                textField.text = (initial - 1).toString()
+    private fun TextField.setKeyPressedEvent() {
+        setOnKeyPressed {
+            if (it.code == KeyCode.UP || it.code == KeyCode.DOWN) {
+                val initial = numberStringConverter.fromString(text)?.toDouble() ?: return@setOnKeyPressed
+                text = when (it.code) {
+                    KeyCode.UP -> initial + 1
+                    KeyCode.DOWN -> if (initial <= 1) 0.0 else initial - 1
+                    else -> throw RuntimeException("Unreachable code")
+                }.toString()
             }
         }
+    }
 
     /**
      * Attach a series of fields for editing [CoordinateProperty]'s.
@@ -255,14 +272,14 @@ class PositionFragment : Fragment() {
                 prefWidth = 100.0
                 filterInput(numberFilter)
 
-                onKeyPressed = buildKeyPressEvent(this)
+                setKeyPressedEvent()
             }
 
             textfield(coordinateProperty.second, numberStringConverter) {
                 prefWidth = 100.0
                 filterInput(numberFilter)
 
-                onKeyPressed = buildKeyPressEvent(this)
+                setKeyPressedEvent()
             }
 
             checkbox(property = coordinateProperty.third)
@@ -280,7 +297,7 @@ class PositionFragment : Fragment() {
             textfield(transform, numberStringConverter) {
                 filterInput(numberFilter)
 
-                onKeyPressed = buildKeyPressEvent(this)
+                setKeyPressedEvent()
             }
         }
     }
@@ -292,7 +309,7 @@ class PositionFragment : Fragment() {
      * @return A [DoubleBinding] from the application of [op] onto [this].
      */
     private fun DoubleProperty.map(op: (Double) -> Double): DoubleBinding = Bindings.createDoubleBinding(Callable {
-        op(this.get())
+        op(get())
     }, this)
 
     /**
@@ -447,6 +464,102 @@ class PositionFragment : Fragment() {
      */
     private lateinit var stack: StackPane
 
+    /**
+     * Add an [ObjectCoordinate] if the [Coordinate] is non-zero
+     *
+     * @param objectType The type of coordinate.
+     * @param coordinateProperty The property containing a [Coordinate].
+     */
+    private fun MutableList<PositionInfo>.addNonZero(objectType: ObjectType, coordinateProperty: CoordinateProperty) {
+        if (!coordinateProperty.isZero) this += ObjectCoordinate(objectType, coordinateProperty.coordinate)
+    }
+
+    /**
+     * Get a list of [BuildingTransform]'s that are all non-zero transformations.
+     *
+     * @param fort The [BuildingType.FORT] transform.
+     * @param naval The [BuildingType.NAVAL_BASE] transform.
+     * @param rail The [BuildingType.RAILROAD] transform.
+     * @param aero The [BuildingType.AEROPLANE_FACTORY] transform.
+     *
+     * @return All transformations that are non-zero.
+     */
+    private fun getBuildingTransforms(
+        fort: DoubleProperty,
+        naval: DoubleProperty,
+        rail: DoubleProperty,
+        aero: DoubleProperty
+    ): List<BuildingTransform> = mutableListOf<BuildingTransform>().apply {
+        if (fort.value != 0.0) this += BuildingTransform(BuildingType.FORT, fort.value)
+        if (naval.value != 0.0) this += BuildingTransform(BuildingType.NAVAL_BASE, naval.value)
+        if (rail.value != 0.0) this += BuildingTransform(BuildingType.RAILROAD, rail.value)
+        if (aero.value != 0.0) this += BuildingTransform(BuildingType.AEROPLANE_FACTORY, aero.value)
+    }
+
+    /**
+     * Get a list of [BuildingPositionData]'s that are all non-zero positions.
+     *
+     * @return All building positions that are non-zero.
+     */
+    private fun getBuildingPositionData(): List<BuildingPositionData> =
+        mutableListOf<BuildingPositionData>().apply {
+            if (!fortPositionProperty.isZero) this += BuildingPositionData(
+                PositionType.FORT,
+                fortPositionProperty.coordinate
+            )
+
+            if (!navalBasePositionProperty.isZero) this += BuildingPositionData(
+                PositionType.NAVAL_BASE,
+                navalBasePositionProperty.coordinate
+            )
+
+            if (!railroadPositionProperty.isZero) this += BuildingPositionData(
+                PositionType.RAILROAD,
+                railroadPositionProperty.coordinate
+            )
+        }
+
+    /**
+     * Create a [PositionData] from the properties of [PositionFragment].
+     *
+     * @return A [PositionData] containing non-zero fields.
+     */
+    private fun buildPositionData(): PositionData = mutableListOf<PositionInfo>().apply {
+        addNonZero(ObjectType.TEXT, textPositionProperty)
+        if (textRotationProperty.value != 0.0) this += TextRotation(textRotationProperty.value)
+        if (textScaleProperty.value != 0.0) this += TextScale(textScaleProperty.value)
+        addNonZero(ObjectType.UNIT, unitCoordinateProperty)
+        addNonZero(ObjectType.CITY, cityCoordinateProperty)
+        addNonZero(ObjectType.BUILDING_CONSTRUCTION, buildingConstructionCoordinateProperty)
+        addNonZero(ObjectType.FACTORY, factoryCoordinateProperty)
+        addNonZero(ObjectType.TOWN, townCoordinateProperty)
+
+        val buildingPositionData = getBuildingPositionData()
+        if (buildingPositionData.isNotEmpty()) {
+            this += BuildingPositions(buildingPositionData)
+        }
+
+        val rotationData = getBuildingTransforms(
+            fortRotationProperty,
+            navalBaseRotationProperty,
+            railroadRotationProperty,
+            aeroplaneFactoryRotationProperty
+        )
+        if (rotationData.isNotEmpty()) {
+            this += BuildingRotations(rotationData)
+        }
+
+        val nudgeData = getBuildingTransforms(
+            fortNudgeProperty,
+            navalBaseNudgeProperty,
+            railroadNudgeProperty,
+            aeroplaneFactoryNudgeProperty
+        )
+        if (rotationData.isNotEmpty()) {
+            this += BuildingNudges(nudgeData)
+        }
+    }
+
     override val root = borderpane {
         left = vbox {
             scrollpane(fitToWidth = true) {
@@ -495,7 +608,13 @@ class PositionFragment : Fragment() {
                 button("Save", ButtonBar.ButtonData.OK_DONE) {
                     isDefaultButton = true
 
-                    // TODO: committing the data.
+                    action {
+                        val newData = buildPositionData()
+                        scope.positions[scope.provinceId] = newData
+                        Positions.toFile(scope.positions)
+
+                        this@PositionFragment.close()
+                    }
                 }
             }
         }

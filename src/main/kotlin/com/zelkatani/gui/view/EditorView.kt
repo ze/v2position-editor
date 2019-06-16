@@ -1,6 +1,6 @@
 package com.zelkatani.gui.view
 
-import com.zelkatani.gui.APPLICATION_NAME
+import com.zelkatani.gui.app.APPLICATION_NAME
 import com.zelkatani.gui.component.MapPane
 import com.zelkatani.gui.component.fragment.OpacityFragment
 import com.zelkatani.gui.component.fragment.OpacityScope

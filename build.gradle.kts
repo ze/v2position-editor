@@ -49,7 +49,7 @@ tasks.withType<AntlrTask> {
 }
 
 tasks.named<Jar>("jar") {
-    manifest.attributes["Main-Class"] = "com.zelkatani.gui.Editor"
+    manifest.attributes["Main-Class"] = "com.zelkatani.gui.app.Editor"
     from(configurations.runtimeClasspath.map { if (it.isDirectory) it as Any else zipTree(it) })
     from(sourceSets["main"].output)
     archiveName = "editor.jar"
