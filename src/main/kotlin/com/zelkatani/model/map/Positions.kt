@@ -5,6 +5,7 @@ import com.zelkatani.antlr.PositionsParser
 import com.zelkatani.model.ModelBuilder
 import com.zelkatani.model.map.BuildingPositionData.PositionType
 import com.zelkatani.model.map.ObjectCoordinate.ObjectType
+import com.zelkatani.model.map.Positions.Companion.format
 import com.zelkatani.visitor.map.PositionsVisitor
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
@@ -12,50 +13,6 @@ import java.io.File
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
-
-/**
- * A coordinate point for (x, y) bound double grids.
- */
-typealias Coordinate = Pair<Double, Double>
-
-/**
- * The quantity of spaces for each level of indentation.
- */
-private const val OFFSET_STEP = 2
-
-/**
- * Repeat the string containing just a space n times.
- */
-private fun n(offset: Int) = " ".repeat(offset)
-
-/**
- * A converter for numbers that are good for `positions.txt`.
- * Scientific notation cannot be used no matter what, and the locale must be English since some locales use commas.
- * Four digits are all that is needed since any extra value is either impreciseness or negligible.
- *
- * Furthermore, file size is reduced by removing the need for "xyz" to display always as "xyz.0".
- */
-private val df = DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH)).apply {
-    isDecimalSeparatorAlwaysShown = false
-    isGroupingUsed = false
-    maximumFractionDigits = 4
-}
-
-/**
- * Convert a [Coordinate] to a string for `positions.txt`.
- * This assumes the starting '{' is next to an '=' with one spacing between them.
- *
- * @see PositionInfo.toPositionString
- */
-private fun Coordinate.toPositionString(offset: Int) = buildString {
-    val inner = n(offset + OFFSET_STEP)
-    val outer = n(offset)
-
-    appendln('{')
-    append(inner).append("x = ").appendln(df.format(first))
-    append(inner).append("y = ").appendln(df.format(second))
-    append(outer).append('}')
-}
 
 /**
  * A model for `positions.txt`.
@@ -84,6 +41,19 @@ data class Positions(val positions: MutableMap<Int, PositionData>) {
         fun toFile(positions: Positions) {
             file.writeText(positions.toString())
         }
+
+        /**
+         * A converter for numbers that are good for `positions.txt`.
+         * Scientific notation cannot be used no matter what, and the locale must be English since some locales use commas.
+         * Four digits are all that is needed since any extra value is either impreciseness or negligible.
+         *
+         * Furthermore, file size is reduced by removing the need for "xyz" to display always as "xyz.0".
+         */
+        val format = DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH)).apply {
+            isDecimalSeparatorAlwaysShown = false
+            isGroupingUsed = false
+            maximumFractionDigits = 4
+        }
     }
 
     /**
@@ -109,6 +79,37 @@ data class Positions(val positions: MutableMap<Int, PositionData>) {
             }
         }
     }
+}
+
+/**
+ * A coordinate point for (x, y) bound double grids.
+ */
+typealias Coordinate = Pair<Double, Double>
+
+/**
+ * The quantity of spaces for each level of indentation.
+ */
+private const val OFFSET_STEP = 2
+
+/**
+ * Repeat the string containing just a space n times.
+ */
+private fun n(offset: Int) = " ".repeat(offset)
+
+/**
+ * Convert a [Coordinate] to a string for `positions.txt`.
+ * This assumes the starting '{' is next to an '=' with one spacing between them.
+ *
+ * @see PositionInfo.toPositionString
+ */
+private fun Coordinate.toPositionString(offset: Int) = buildString {
+    val inner = n(offset + OFFSET_STEP)
+    val outer = n(offset)
+
+    appendln('{')
+    append(inner).append("x = ").appendln(format.format(first))
+    append(inner).append("y = ").appendln(format.format(second))
+    append(outer).append('}')
 }
 
 /**
@@ -171,7 +172,7 @@ private fun List<BuildingTransform>.toPositionString(offset: Int) = buildString 
                 BuildingType.AEROPLANE_FACTORY -> "aeroplane_factory"
             }
         ).append(" = ")
-        append(df.format(it.second))
+        append(format.format(it.second))
     }
 }
 
@@ -262,7 +263,7 @@ data class SpawnRailwayTrack(val coordinates: List<Coordinate>) : PositionInfo()
  */
 data class TextRotation(val rotation: Double) : PositionInfo() {
     override fun toPositionString(offset: Int) = buildString {
-        append(n(offset)).append("text_rotation = ").append(df.format(rotation))
+        append(n(offset)).append("text_rotation = ").append(format.format(rotation))
     }
 }
 
@@ -271,7 +272,7 @@ data class TextRotation(val rotation: Double) : PositionInfo() {
  */
 data class TextScale(val scale: Double) : PositionInfo() {
     override fun toPositionString(offset: Int) = buildString {
-        append(n(offset)).append("text_scale = ").append(df.format(scale))
+        append(n(offset)).append("text_scale = ").append(format.format(scale))
     }
 }
 

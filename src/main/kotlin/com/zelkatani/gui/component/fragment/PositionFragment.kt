@@ -27,7 +27,6 @@ import javafx.scene.text.Text
 import javafx.util.converter.NumberStringConverter
 import tornadofx.*
 import java.awt.Rectangle
-import java.text.NumberFormat
 import java.util.concurrent.Callable
 import kotlin.math.PI
 
@@ -130,11 +129,9 @@ class PositionFragment : Fragment() {
     }
 
     /**
-     * A [NumberStringConverter] that does not group numbers with commas.
+     * A [NumberStringConverter] that utilizes [Positions.format]
      */
-    private val numberStringConverter = NumberStringConverter(NumberFormat.getNumberInstance().apply {
-        isGroupingUsed = false
-    })
+    private val converter = NumberStringConverter(Positions.format)
 
     /**
      * Remove the [nodesListener] on [PositionScope.nodes].
@@ -251,12 +248,15 @@ class PositionFragment : Fragment() {
         setOnKeyPressed {
             val c = it.code
             if ((horizontal && (c == KeyCode.LEFT || c == KeyCode.RIGHT)) || c == KeyCode.UP || c == KeyCode.DOWN) {
-                val initial = numberStringConverter.fromString(text)?.toDouble() ?: return@setOnKeyPressed
-                text = when (c) {
+                val initial = converter.fromString(text)?.toDouble() ?: return@setOnKeyPressed
+
+                text = converter.toString(
+                    when (c) {
                     KeyCode.UP, KeyCode.RIGHT -> initial + 1
                     KeyCode.DOWN, KeyCode.LEFT -> if (initial <= 1) 0.0 else initial - 1
                     else -> throw RuntimeException("Unreachable code")
-                }.toString()
+                    }
+                )
             }
         }
     }
@@ -269,14 +269,14 @@ class PositionFragment : Fragment() {
      */
     private fun Fieldset.coordinates(name: String, coordinateProperty: CoordinateProperty) {
         field("$name:") {
-            textfield(coordinateProperty.first, numberStringConverter) {
+            textfield(coordinateProperty.first, converter) {
                 prefWidth = 100.0
                 filterInput(numberFilter)
 
                 setKeyPressedEvent(horizontal = true)
             }
 
-            textfield(coordinateProperty.second, numberStringConverter) {
+            textfield(coordinateProperty.second, converter) {
                 prefWidth = 100.0
                 filterInput(numberFilter)
 
@@ -295,7 +295,7 @@ class PositionFragment : Fragment() {
      */
     private fun Fieldset.transform(name: String, transform: DoubleProperty) {
         field("$name:") {
-            textfield(transform, numberStringConverter) {
+            textfield(transform, converter) {
                 filterInput(numberFilter)
 
                 setKeyPressedEvent()

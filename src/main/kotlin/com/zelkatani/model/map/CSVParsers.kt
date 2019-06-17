@@ -80,7 +80,7 @@ class AdjacenciesParser(file: File) : MapCSVParser(file) {
                 "canal" -> AdjacencyType.CANAL
                 else -> {
                     multiException.add("Unknown adjacency positionType: ${it[2]}", it.recordNumber.toInt())
-                    AdjacencyType.ERROR
+                    ERROR
                 }
             }
 
