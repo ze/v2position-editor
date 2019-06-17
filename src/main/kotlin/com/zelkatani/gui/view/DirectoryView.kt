@@ -1,13 +1,17 @@
 package com.zelkatani.gui.view
 
 import com.zelkatani.gui.app.APPLICATION_NAME
+import com.zelkatani.gui.app.GAME_PATH
+import com.zelkatani.gui.app.MOD_PATH
 import com.zelkatani.gui.app.PREFERENCES_NAME
 import com.zelkatani.gui.controller.DirectoryController
 import com.zelkatani.model.GameLocation
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import javafx.beans.binding.Bindings
+import javafx.beans.property.Property
 import javafx.beans.property.SimpleStringProperty
+import javafx.event.EventTarget
 import javafx.scene.control.ButtonBar
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
@@ -38,57 +42,45 @@ class DirectoryView : View(APPLICATION_NAME) {
         model.modPath.value = GameLocation.modPath.orEmpty()
     }
 
+    /**
+     * Attach a directory selector with a read-only indicator of value.
+     *
+     * @param name The field name.
+     * @param message The directory selector message.
+     * @param filePath The property to bind, and update the value of.
+     */
+    private fun EventTarget.selector(name: String, message: String, filePath: Property<String>) {
+        hbox(10) {
+            textfield {
+                bind(filePath, true)
+                isEditable = false
+
+                HBox.setHgrow(this, Priority.ALWAYS)
+            }
+
+            button(name) {
+                prefWidth = 150.0
+
+                action {
+                    val file = chooseDirectory(message)
+
+                    file?.let {
+                        filePath.value = file.path
+                    }
+                }
+            }
+        }
+
+    }
+
     override val root = form {
         spacing = 7.5
-        prefWidth = 500.0
+        prefWidth = 650.0
 
         fieldset("Game Paths", FontAwesomeIconView(FontAwesomeIcon.FOLDER)) {
             vbox(10) {
-                hbox(10) {
-                    textfield {
-                        bind(model.gamePath, true)
-                        isEditable = false
-
-                        HBox.setHgrow(this, Priority.ALWAYS)
-                    }
-
-                    button("Victoria 2 Path") {
-                        prefWidth = 150.0
-
-                        action {
-                            val file = chooseDirectory {
-                                title = "Select the Victoria 2 game location."
-                            }
-
-                            file?.let {
-                                model.gamePath.value = file.path
-                            }
-                        }
-                    }
-                }
-
-                hbox(10) {
-                    textfield {
-                        bind(model.modPath, true)
-                        isEditable = false
-
-                        HBox.setHgrow(this, Priority.ALWAYS)
-                    }
-
-                    button("Mod Path") {
-                        prefWidth = 150.0
-
-                        action {
-                            val file = chooseDirectory {
-                                title = "Select the mod folder directory."
-                            }
-
-                            file?.let {
-                                model.modPath.value = file.path
-                            }
-                        }
-                    }
-                }
+                selector("Victoria 2 Path", "Select the Victoria 2 game location.", model.gamePath)
+                selector("Mod Path", "Select the mod folder directory.", model.modPath)
             }
         }
 
@@ -107,8 +99,8 @@ class DirectoryView : View(APPLICATION_NAME) {
                 action {
                     model.commit {
                         preferences(PREFERENCES_NAME) {
-                            put("game_path", model.gamePath.value)
-                            put("mod_path", model.modPath.value)
+                            put(GAME_PATH, model.gamePath.value)
+                            put(MOD_PATH, model.modPath.value)
                         }
 
                         GameLocation.gamePath = model.gamePath.value

@@ -247,13 +247,14 @@ class PositionFragment : Fragment() {
     /**
      * Provide an [EventHandler] for key presses for the textfield provided.
      */
-    private fun TextField.setKeyPressedEvent() {
+    private fun TextField.setKeyPressedEvent(horizontal: Boolean = false) {
         setOnKeyPressed {
-            if (it.code == KeyCode.UP || it.code == KeyCode.DOWN) {
+            val c = it.code
+            if ((horizontal && (c == KeyCode.LEFT || c == KeyCode.RIGHT)) || c == KeyCode.UP || c == KeyCode.DOWN) {
                 val initial = numberStringConverter.fromString(text)?.toDouble() ?: return@setOnKeyPressed
-                text = when (it.code) {
-                    KeyCode.UP -> initial + 1
-                    KeyCode.DOWN -> if (initial <= 1) 0.0 else initial - 1
+                text = when (c) {
+                    KeyCode.UP, KeyCode.RIGHT -> initial + 1
+                    KeyCode.DOWN, KeyCode.LEFT -> if (initial <= 1) 0.0 else initial - 1
                     else -> throw RuntimeException("Unreachable code")
                 }.toString()
             }
@@ -272,7 +273,7 @@ class PositionFragment : Fragment() {
                 prefWidth = 100.0
                 filterInput(numberFilter)
 
-                setKeyPressedEvent()
+                setKeyPressedEvent(horizontal = true)
             }
 
             textfield(coordinateProperty.second, numberStringConverter) {

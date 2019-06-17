@@ -8,6 +8,8 @@ import tornadofx.*
 
 const val APPLICATION_NAME = "Victoria 2 - Map Editor"
 const val PREFERENCES_NAME = "v2-map-editor"
+const val GAME_PATH = "game_path"
+const val MOD_PATH = "mod_path"
 
 /**
  * The main GUI application.

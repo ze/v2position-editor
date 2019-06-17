@@ -88,7 +88,6 @@ class EditorView : View(APPLICATION_NAME) {
         opacityFragment.openWindow(
             stageStyle = StageStyle.UTILITY,
             escapeClosesWindow = false,
-            block = false,
             resizable = false
         )
     }

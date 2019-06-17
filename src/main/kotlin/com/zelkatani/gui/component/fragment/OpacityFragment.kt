@@ -17,6 +17,7 @@ import javafx.scene.control.TextFormatter
 import javafx.scene.effect.BlendMode
 import javafx.scene.input.KeyCode
 import javafx.scene.input.MouseEvent
+import javafx.stage.WindowEvent
 import javafx.util.converter.NumberStringConverter
 import tornadofx.*
 import kotlin.math.round
@@ -248,6 +249,8 @@ class OpacityFragment : Fragment("Layer Opacity") {
      * Add the selected listener to the selected value.
      */
     override fun onDock() {
+        currentWindow?.setOnCloseRequest(WindowEvent::consume)
+
         selected.addListener(selectedListener)
     }
 

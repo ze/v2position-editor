@@ -9,6 +9,9 @@ import com.zelkatani.visitor.map.PositionsVisitor
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import java.io.File
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.*
 
 /**
  * A coordinate point for (x, y) bound double grids.
@@ -26,6 +29,19 @@ private const val OFFSET_STEP = 2
 private fun n(offset: Int) = " ".repeat(offset)
 
 /**
+ * A converter for numbers that are good for `positions.txt`.
+ * Scientific notation cannot be used no matter what, and the locale must be English since some locales use commas.
+ * Four digits are all that is needed since any extra value is either impreciseness or negligible.
+ *
+ * Furthermore, file size is reduced by removing the need for "xyz" to display always as "xyz.0".
+ */
+private val df = DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH)).apply {
+    isDecimalSeparatorAlwaysShown = false
+    isGroupingUsed = false
+    maximumFractionDigits = 4
+}
+
+/**
  * Convert a [Coordinate] to a string for `positions.txt`.
  * This assumes the starting '{' is next to an '=' with one spacing between them.
  *
@@ -36,8 +52,8 @@ private fun Coordinate.toPositionString(offset: Int) = buildString {
     val outer = n(offset)
 
     appendln('{')
-    append(inner).append("x = ").appendln(first)
-    append(inner).append("y = ").appendln(second)
+    append(inner).append("x = ").appendln(df.format(first))
+    append(inner).append("y = ").appendln(df.format(second))
     append(outer).append('}')
 }
 
@@ -155,7 +171,7 @@ private fun List<BuildingTransform>.toPositionString(offset: Int) = buildString 
                 BuildingType.AEROPLANE_FACTORY -> "aeroplane_factory"
             }
         ).append(" = ")
-        append(it.second)
+        append(df.format(it.second))
     }
 }
 
@@ -246,7 +262,7 @@ data class SpawnRailwayTrack(val coordinates: List<Coordinate>) : PositionInfo()
  */
 data class TextRotation(val rotation: Double) : PositionInfo() {
     override fun toPositionString(offset: Int) = buildString {
-        append(n(offset)).append("text_rotation = ").append(rotation)
+        append(n(offset)).append("text_rotation = ").append(df.format(rotation))
     }
 }
 
@@ -255,7 +271,7 @@ data class TextRotation(val rotation: Double) : PositionInfo() {
  */
 data class TextScale(val scale: Double) : PositionInfo() {
     override fun toPositionString(offset: Int) = buildString {
-        append(n(offset)).append("text_scale = ").append(scale)
+        append(n(offset)).append("text_scale = ").append(df.format(scale))
     }
 }
 
