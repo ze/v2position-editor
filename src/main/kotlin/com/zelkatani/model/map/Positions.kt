@@ -97,6 +97,11 @@ private const val OFFSET_STEP = 2
 private fun n(offset: Int) = " ".repeat(offset)
 
 /**
+ * Append a unix linefeed onto a normal string. This is necessary since [appendln] can append a Windows linefeed.
+ */
+private fun StringBuilder.appendlf(s: String) = append(s).append('\n')
+
+/**
  * Convert a [Coordinate] to a string for `positions.txt`.
  * This assumes the starting '{' is next to an '=' with one spacing between them.
  *
@@ -106,9 +111,9 @@ private fun Coordinate.toPositionString(offset: Int) = buildString {
     val inner = n(offset + OFFSET_STEP)
     val outer = n(offset)
 
-    appendln('{')
-    append(inner).append("x = ").appendln(format.format(first))
-    append(inner).append("y = ").appendln(format.format(second))
+    appendlf("{")
+    append(inner).append("x = ").appendlf(format.format(first))
+    append(inner).append("y = ").appendlf(format.format(second))
     append(outer).append('}')
 }
 
@@ -182,8 +187,8 @@ private fun List<BuildingTransform>.toPositionString(offset: Int) = buildString 
 data class BuildingNudges(val transforms: List<BuildingTransform>) : PositionInfo() {
     override fun toPositionString(offset: Int) = buildString {
         val outer = n(offset)
-        append(outer).appendln("building_nudge = {")
-        appendln(transforms.toPositionString(offset + OFFSET_STEP))
+        append(outer).appendlf("building_nudge = {")
+        appendlf(transforms.toPositionString(offset + OFFSET_STEP))
         append(outer).append('}')
     }
 }
@@ -194,8 +199,8 @@ data class BuildingNudges(val transforms: List<BuildingTransform>) : PositionInf
 data class BuildingRotations(val transforms: List<BuildingTransform>) : PositionInfo() {
     override fun toPositionString(offset: Int) = buildString {
         val outer = n(offset)
-        append(outer).appendln("building_rotation = {")
-        appendln(transforms.toPositionString(offset + OFFSET_STEP))
+        append(outer).appendlf("building_rotation = {")
+        appendlf(transforms.toPositionString(offset + OFFSET_STEP))
         append(outer).append('}')
     }
 }
@@ -227,7 +232,7 @@ data class BuildingPositions(val positions: List<BuildingPositionData>) : Positi
         val outer = n(offset)
         val inner = n(offset + OFFSET_STEP)
 
-        append(outer).appendln("building_position = {")
+        append(outer).appendlf("building_position = {")
         positions.forEach {
             append(inner).append(
                 when (it.positionType) {
@@ -236,7 +241,7 @@ data class BuildingPositions(val positions: List<BuildingPositionData>) : Positi
                     PositionType.RAILROAD -> "railroad"
                 }
             ).append(" = ")
-            appendln(it.coordinate.toPositionString(offset + OFFSET_STEP))
+            appendlf(it.coordinate.toPositionString(offset + OFFSET_STEP))
         }
         append(outer).append('}')
     }
@@ -250,9 +255,9 @@ data class SpawnRailwayTrack(val coordinates: List<Coordinate>) : PositionInfo()
         val outer = n(offset)
         val inner = n(offset + OFFSET_STEP)
 
-        append(outer).appendln("spawn_railway_track = {")
+        append(outer).appendlf("spawn_railway_track = {")
         coordinates.forEach {
-            append(inner).appendln(it.toPositionString(offset + OFFSET_STEP))
+            append(inner).appendlf(it.toPositionString(offset + OFFSET_STEP))
         }
         append(outer).append('}')
     }
