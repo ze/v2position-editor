@@ -244,17 +244,17 @@ class PositionFragment : Fragment() {
     /**
      * Provide an [EventHandler] for key presses for the textfield provided.
      */
-    private fun TextField.setKeyPressedEvent(horizontal: Boolean = false) {
+    private fun TextField.setKeyPressedEvent() {
         setOnKeyPressed {
             val c = it.code
-            if ((horizontal && (c == KeyCode.LEFT || c == KeyCode.RIGHT)) || c == KeyCode.UP || c == KeyCode.DOWN) {
+            if (c == KeyCode.UP || c == KeyCode.DOWN) {
                 val initial = converter.fromString(text)?.toDouble() ?: return@setOnKeyPressed
 
                 text = converter.toString(
                     when (c) {
-                    KeyCode.UP, KeyCode.RIGHT -> initial + 1
-                    KeyCode.DOWN, KeyCode.LEFT -> if (initial <= 1) 0.0 else initial - 1
-                    else -> throw RuntimeException("Unreachable code")
+                        KeyCode.UP -> initial + 1
+                        KeyCode.DOWN -> if (initial <= 1) 0.0 else initial - 1
+                        else -> throw RuntimeException("Unreachable code")
                     }
                 )
             }
@@ -273,7 +273,7 @@ class PositionFragment : Fragment() {
                 prefWidth = 100.0
                 filterInput(numberFilter)
 
-                setKeyPressedEvent(horizontal = true)
+                setKeyPressedEvent()
             }
 
             textfield(coordinateProperty.second, converter) {
@@ -284,6 +284,11 @@ class PositionFragment : Fragment() {
             }
 
             checkbox(property = coordinateProperty.third)
+            faiconview(FontAwesomeIcon.COMPRESS, "1.5em").setOnMouseClicked {
+                val bounds = scope.bounds
+                coordinateProperty.first.value = bounds.centerX
+                coordinateProperty.second.value = bounds.centerY
+            }
         }
     }
 
@@ -620,9 +625,9 @@ class PositionFragment : Fragment() {
             }
         }
 
-        center = scrollpane {
-            if (scope.bounds.width * scope.ratio > POSITION_FRAGMENT_HEIGHT * 2) {
-                prefViewportWidth = POSITION_FRAGMENT_HEIGHT * 2
+        center = scrollpane(fitToWidth = true) {
+            if (scope.bounds.width * scope.ratio > POSITION_FRAGMENT_HEIGHT * 1.75) {
+                prefViewportWidth = POSITION_FRAGMENT_HEIGHT * 1.75
             }
 
             // if it ever appears, its likely because of padding in the way

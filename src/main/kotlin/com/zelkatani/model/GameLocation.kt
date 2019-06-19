@@ -10,7 +10,11 @@ object GameLocation {
     /**
      * The path for the game, null by default until set.
      */
-    var gamePath: String? = null
+    var gamePath: String = if (System.getProperty("os.name").contains("Windows")) {
+        "C:\\Program Files (x86)\\Steam\\SteamApps\\common\\Victoria 2"
+    } else {
+        "~/Library/Containers/com.vpltd.Victoria2HeartOfDarkness/Data/Library/Application Support/com.vpltd.Victoria2HeartOfDarkness-MAS/"
+    }
 
     /**
      * The path for the game, null by default until set.
@@ -20,12 +24,14 @@ object GameLocation {
     /**
      * The file for the [gamePath].
      */
-    val gameFolder by lazy { File(gamePath) }
+    val gameFolder: File
+        get() = File(gamePath)
 
     /**
      * The file for [modPath]
      */
-    val modFolder by lazy { File(modPath) }
+    val modFolder: File
+        get() = File(modPath)
 
     /**
      * Get a file from [modFolder] if it exists in [gameFolder] originally.

@@ -44,7 +44,6 @@ class EditorStylesheet : Stylesheet() {
         private val fieldBackgroundColor = c("#BFDDF5")
 
         private val iconColor = Color.DEEPSKYBLUE
-        private val iconColorPressed = iconColor.darker()
     }
 
     init {
@@ -62,7 +61,7 @@ class EditorStylesheet : Stylesheet() {
         pressedIcon {
             fill = iconColor
             and(pressed) {
-                fill = iconColorPressed
+                fill = iconColor.darker()
             }
         }
     }

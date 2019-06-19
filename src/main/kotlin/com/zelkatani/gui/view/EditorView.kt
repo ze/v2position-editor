@@ -45,8 +45,6 @@ class EditorView : View(APPLICATION_NAME) {
 
         newValue?.openWindow(
             stageStyle = StageStyle.UTILITY,
-            escapeClosesWindow = false,
-            block = false,
             resizable = false
         )
     }
@@ -99,12 +97,10 @@ class EditorView : View(APPLICATION_NAME) {
         positionFragmentProperty.removeListener(positionFragmentListener)
     }
 
-    override val root = borderpane {
-        center = scrollpane {
-            add(mapPane)
+    override val root = scrollpane {
+        add(mapPane)
 
-            prefViewportWidthProperty().bind(primaryStage.widthProperty())
-            prefViewportHeightProperty().bind(primaryStage.heightProperty())
-        }
+        prefViewportWidthProperty().bind(primaryStage.widthProperty())
+        prefViewportHeightProperty().bind(primaryStage.heightProperty())
     }
 }

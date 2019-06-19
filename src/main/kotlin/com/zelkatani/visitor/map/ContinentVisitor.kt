@@ -43,7 +43,7 @@ class ContinentVisitor : ContinentBaseVisitor<Any>() {
 
     override fun visitContinentData(ctx: ContinentParser.ContinentDataContext): Pair<String, ContinentInfo> {
         val pbc = ctx.provincesBlock()
-        val cec = ctx.continentExpr() // TODO test if duplicates break or override.
+        val cec = ctx.continentExpr()
 
         val line = ctx.line
         if (pbc.size > 1) multiException += "Too many province definition" to line

@@ -72,7 +72,6 @@ class MapPane(
             positionProvincesView
         ).toProperty()
 
-
     /**
      * Copy an [ImageView]'s y-scale, [ImageView.opacityProperty], and [ImageView.blendModeProperty]
      *

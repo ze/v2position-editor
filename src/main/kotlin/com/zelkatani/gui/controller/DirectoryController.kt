@@ -15,8 +15,6 @@ import tornadofx.find
  * A controller for [DirectoryView].
  */
 class DirectoryController : Controller() {
-    private val directoryView: DirectoryView by inject()
-
     /**
      * Load preferences if they exist.
      * If they exist, they are NOT committed, but loaded in from [DirectoryView].
@@ -36,13 +34,16 @@ class DirectoryController : Controller() {
      * This parses the inputted files,
      * Validation of directories is done here.
      * An instance of [EditorView] is loaded in if successful.
+     *
+     * @return An [EditorView] if successful otherwise a [Result.failure]
      */
-    fun commitGameLocation() {
-        // TODO: handle errors
+    fun commitGameLocation(): Result<EditorView> = try {
         val mod = Mod.from(GameLocation.modFolder)
         val editorScope = EditorScope(mod)
 
         val editorView = find<EditorView>(editorScope)
-        directoryView.replaceWith(editorView, centerOnScreen = true, sizeToScene = true)
+        Result.success(editorView)
+    } catch (e: Exception) {
+        Result.failure(e)
     }
 }

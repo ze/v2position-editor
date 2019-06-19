@@ -16,6 +16,7 @@ import javafx.scene.control.ButtonBar
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import tornadofx.*
+import java.io.IOException
 
 /**
  * The starting [View] for the application. Defines the game and mod path.
@@ -38,7 +39,7 @@ class DirectoryView : View(APPLICATION_NAME) {
      * Set the values of [model] if they already exist.
      */
     override fun onBeforeShow() {
-        model.gamePath.value = GameLocation.gamePath.orEmpty()
+        model.gamePath.value = GameLocation.gamePath
         model.modPath.value = GameLocation.modPath.orEmpty()
     }
 
@@ -97,15 +98,25 @@ class DirectoryView : View(APPLICATION_NAME) {
                 }
 
                 action {
-                    model.commit {
-                        preferences(PREFERENCES_NAME) {
-                            put(GAME_PATH, model.gamePath.value)
-                            put(MOD_PATH, model.modPath.value)
+                    GameLocation.gamePath = model.gamePath.value
+                    GameLocation.modPath = model.modPath.value
+                    val result = directoryController.commitGameLocation()
+
+                    result.fold({
+                        model.commit {
+                            preferences(PREFERENCES_NAME) {
+                                put(GAME_PATH, model.gamePath.value)
+                                put(MOD_PATH, model.modPath.value)
+                            }
                         }
 
-                        GameLocation.gamePath = model.gamePath.value
-                        GameLocation.modPath = model.modPath.value
-                        directoryController.commitGameLocation()
+                        replaceWith(it, centerOnScreen = true, sizeToScene = true)
+                    }) {
+                        if (it is IOException) {
+                            model.rollback()
+                        }
+
+                        error("Failure loading game and/or mod directory.", it.toString())
                     }
                 }
             }
