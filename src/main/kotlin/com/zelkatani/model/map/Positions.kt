@@ -71,11 +71,11 @@ data class Positions(val positions: MutableMap<Int, PositionData>) {
     override fun toString() = buildString {
         positions.forEach { (prov, data) ->
             if (data.isNotEmpty()) {
-                append(prov).appendln(" = {")
+                append(prov).appendlf(" = {")
                 data.forEach {
-                    appendln(it.toPositionString(OFFSET_STEP))
+                    appendlf(it.toPositionString(OFFSET_STEP))
                 }
-                appendln('}')
+                appendlf("}")
             }
         }
     }
@@ -114,7 +114,7 @@ private fun Coordinate.toPositionString(offset: Int) = buildString {
     appendlf("{")
     append(inner).append("x = ").appendlf(format.format(first))
     append(inner).append("y = ").appendlf(format.format(second))
-    append(outer).append('}')
+    append(outer).append("}")
 }
 
 /**
@@ -177,7 +177,7 @@ private fun List<BuildingTransform>.toPositionString(offset: Int) = buildString 
                 BuildingType.AEROPLANE_FACTORY -> "aeroplane_factory"
             }
         ).append(" = ")
-        append(format.format(it.second))
+        appendlf(format.format(it.second))
     }
 }
 
@@ -189,7 +189,7 @@ data class BuildingNudges(val transforms: List<BuildingTransform>) : PositionInf
         val outer = n(offset)
         append(outer).appendlf("building_nudge = {")
         appendlf(transforms.toPositionString(offset + OFFSET_STEP))
-        append(outer).append('}')
+        append(outer).append("}")
     }
 }
 
@@ -200,8 +200,8 @@ data class BuildingRotations(val transforms: List<BuildingTransform>) : Position
     override fun toPositionString(offset: Int) = buildString {
         val outer = n(offset)
         append(outer).appendlf("building_rotation = {")
-        appendlf(transforms.toPositionString(offset + OFFSET_STEP))
-        append(outer).append('}')
+        append(transforms.toPositionString(offset + OFFSET_STEP))
+        append(outer).append("}")
     }
 }
 
@@ -243,7 +243,7 @@ data class BuildingPositions(val positions: List<BuildingPositionData>) : Positi
             ).append(" = ")
             appendlf(it.coordinate.toPositionString(offset + OFFSET_STEP))
         }
-        append(outer).append('}')
+        append(outer).append("}")
     }
 }
 
@@ -259,7 +259,7 @@ data class SpawnRailwayTrack(val coordinates: List<Coordinate>) : PositionInfo()
         coordinates.forEach {
             append(inner).appendlf(it.toPositionString(offset + OFFSET_STEP))
         }
-        append(outer).append('}')
+        append(outer).append("}")
     }
 }
 

@@ -532,8 +532,8 @@ class PositionFragment : Fragment() {
      */
     private fun buildPositionData(): PositionData = mutableListOf<PositionInfo>().apply {
         addNonZero(ObjectType.TEXT, textPositionProperty)
-        if (textRotationProperty.value != 0.0) this += TextRotation(textRotationProperty.value)
-        if (textScaleProperty.value != 0.0) this += TextScale(textScaleProperty.value)
+        if (textRotationProperty.value >= 0.01) this += TextRotation(textRotationProperty.value)
+        if (textScaleProperty.value >= 0.01) this += TextScale(textScaleProperty.value)
         addNonZero(ObjectType.UNIT, unitCoordinateProperty)
         addNonZero(ObjectType.CITY, cityCoordinateProperty)
         addNonZero(ObjectType.BUILDING_CONSTRUCTION, buildingConstructionCoordinateProperty)
