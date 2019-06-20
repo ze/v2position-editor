@@ -6,8 +6,8 @@ import javafx.scene.paint.Color
 import javafx.stage.Stage
 import tornadofx.*
 
-const val APPLICATION_NAME = "Victoria 2 - Map Editor"
-const val PREFERENCES_NAME = "v2-map-editor"
+const val APPLICATION_NAME = "Victoria 2 - Position Editor"
+const val PREFERENCES_NAME = "v2-editor"
 const val GAME_PATH = "game_path"
 const val MOD_PATH = "mod_path"
 
