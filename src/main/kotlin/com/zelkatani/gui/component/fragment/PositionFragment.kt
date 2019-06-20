@@ -326,7 +326,7 @@ class PositionFragment : Fragment() {
      */
     private fun Fieldset.rotation(name: String, rotation: DoubleProperty) {
         field("$name:") {
-            val c = circle(radius = 112.5) {
+            val c = circle(radius = 115.5) {
                 fill = Color.WHITE
                 stroke = Color.BLACK
                 strokeWidth = 1.0
@@ -353,6 +353,10 @@ class PositionFragment : Fragment() {
 
                 c.onMouseDragged = rotateEvent
                 c.onMouseClicked = rotateEvent
+            }
+
+            faiconview(FontAwesomeIcon.COMPRESS, "1.5em").setOnMouseClicked {
+                rotation.value = 0.0
             }
         }
     }
@@ -382,6 +386,17 @@ class PositionFragment : Fragment() {
         }
 
     /**
+     * A binding of the layoutHeight of a [Text.layoutBoundsProperty].
+     */
+    private val Text.layoutHeightProperty: DoubleBinding
+        get() {
+            val lb = layoutBoundsProperty()
+            return Bindings.createDoubleBinding(Callable {
+                lb.get().height
+            }, lb)
+        }
+
+    /**
      * Attach text for viewing a [CoordinateProperty].
      *
      * @param position The coordinates to work with.
@@ -403,7 +418,7 @@ class PositionFragment : Fragment() {
             rotateProperty().bind(-(rotation * 180 / PI) + 360)
 
             layoutXProperty().bind(x - layoutWidthProperty / 2)
-            layoutYProperty().bind(y)
+            layoutYProperty().bind(y - layoutHeightProperty / 4)
 
             scale.onChange {
                 style = "-fx-font-size: ${it * scope.ratio * 1.2}px;"
